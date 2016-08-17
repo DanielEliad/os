@@ -1,1 +1,4 @@
-build/
+*.bin
+*.o
+os_image
+*.dis
