@@ -17,12 +17,12 @@ kernel.bin: kernel_entry.o ${OBJ}
 	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 %.o : %.c ${HEADERS}
-	gcc -m32 -ffreestanding -c $< -o $@
+	gcc -m32 -std=c99  -ffreestanding -c $< -o $@
 
 %.o : %.asm
 	nasm $< -f elf32 -o $@
 %.bin : %.asm
-	nasm $< -f bin -I '16bit/' -o $@
+	nasm $< -f bin -I boot/ -o $@
 
 clean:
 	rm -rf *.bin *.dis *.o os_image
