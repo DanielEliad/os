@@ -1,3 +1,5 @@
+MAKEFLAGS += --silent
+
 # Default make target.
 # Run qemu to simulate booting of our code.
 all: build
