@@ -1,9 +1,10 @@
 # Automatically generate lists of sources using wildcards .
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
+CPP_SOURCES = $(wildcard kernel/*.cpp drivers/*.cpp)
 HEADERS = $(wildcard kernel/*.h drivers/*.h)
+#$(info  ${CPP_SOURCES})
 # TODO : Make sources dep on all header files .
 # Convert the *.c filenames to *.o to give a list of object files to build
-OBJ = ${C_SOURCES:.c=.o}
+OBJ = ${CPP_SOURCES:.cpp=.o}
 # Defaul build target
 all: os_image
 
@@ -16,12 +17,12 @@ os_image: boot/boot_sect.bin kernel.bin
 kernel.bin: kernel_entry.o ${OBJ}
 	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
-%.o : %.c ${HEADERS}
-	gcc -m32 -std=c99  -ffreestanding -c $< -o $@
+%.o: %.cpp ${HEADERS}
+	g++ -m32 -std=c++11  -ffreestanding -c $< -o $@
 
-%.o : %.asm
+%.o: %.asm
 	nasm $< -f elf32 -o $@
-%.bin : %.asm
+%.bin: %.asm
 	nasm $< -f bin -I boot/ -o $@
 
 clean:
