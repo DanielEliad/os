@@ -3,7 +3,7 @@
 
 #include "../kernel/IO.h"
 #include "../kernel/Utils.h"
-
+#include <string>
 
 
 
@@ -17,9 +17,9 @@ namespace Screen {
 	#define REG_SCREEN_DATA 0x3D5
 
 
-	void print(char* message);
+	void print(std::string message);
 	void clear_screen();
-	void print_at(char* message, int col, int row);
+	void print_at(std::string message, int col, int row);
 
 	void print_char(char character, int col, int row, char attribute_byte);
 	int get_screen_offset(int col, int row);

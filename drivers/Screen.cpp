@@ -59,16 +59,16 @@ void Screen::set_cursor(int offset) {
 	IO::port_byte_out(REG_SCREEN_DATA, (unsigned char) (offset & 0xff));
 }
 
-void Screen::print_at(char* message, int col, int row) {
+void Screen::print_at(std::string message, int col, int row) {
 	if(col >= 0 && row >= 0) {
 		set_cursor(get_screen_offset(col, row));
 	}
 
 	int i = 0;
 	int offset;
-	while(message[i] != 0) {
+	while(message.at(i) != 0) {
 		offset = get_cursor();
-		print_char(message[i++], get_col(offset), get_row(offset), WHITE_ON_BLACK);
+		print_char(message.at(i++), get_col(offset), get_row(offset), WHITE_ON_BLACK);
 	}
 }
 
@@ -82,7 +82,7 @@ int Screen::get_row(int offset) {
 	return offset/MAX_COLS;
 }
 
-void Screen::print(char* message) {
+void Screen::print(std::string message) {
 	print_at(message, -1, -1);
 }
 

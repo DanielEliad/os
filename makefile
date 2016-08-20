@@ -15,7 +15,7 @@ os_image: boot/boot_sect.bin kernel.bin
 	cat $^ > os_image
 
 kernel.bin: kernel_entry.o ${OBJ}
-	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
+	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary -lstdc++ 
 
 %.o: %.cpp ${HEADERS}
 	g++ -m32 -std=c++11  -ffreestanding -c $< -o $@
