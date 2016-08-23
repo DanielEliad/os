@@ -1,0 +1,1 @@
+Trust me - writing kernel code in C++ is a BLOODY STUPID IDEA.
