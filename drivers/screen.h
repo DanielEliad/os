@@ -17,10 +17,10 @@ void print_char(char character, int col, int row, char attribute_byte);
 int get_screen_offset(int col, int row);
 int get_cursor();
 void set_cursor(int offset);
-void print_at(char* message, int col, int row);
+void print_at(const char* message, int col, int row);
 int get_col(int offset);
 int get_row(int offset);
-void print(char* message);
+void print(const char* message);
 void clear_screen();
 int handle_scrolling(int cursor_offset);
 

@@ -56,7 +56,7 @@ void set_cursor(int offset) {
 	port_byte_out(REG_SCREEN_DATA, (unsigned char) (offset & 0xff));
 }
 
-void print_at(char* message, int col, int row) {
+void print_at(const char* message, int col, int row) {
 	if(col >= 0 && row >= 0) {
 		set_cursor(get_screen_offset(col, row));
 	}
@@ -79,7 +79,7 @@ int get_row(int offset) {
 	return offset/MAX_COLS;
 }
 
-void print(char* message) {
+void print(const char* message) {
 	print_at(message, -1, -1);
 }
 
