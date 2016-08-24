@@ -114,3 +114,13 @@ int handle_scrolling(int cursor_offset) {
 	return cursor_offset;
 }
 
+
+
+/* Sets the forecolor and backcolor that we will use */
+char gettextcolor(unsigned char forecolor, unsigned char backcolor) {
+    /* Top 4 bytes are the background, bottom 4 bytes
+    *  are the foreground color */
+    return (backcolor << 4) | (forecolor & 0x0F)
+}
+
+
