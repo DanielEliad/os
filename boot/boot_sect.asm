@@ -43,7 +43,7 @@ BOOT_DRIVE db 0
 ; MSG_PROT_MODE db " Successfully landed in 32 - bit Protected Mode " , 0
 ; MSG_LOAD_KERNEL db " Loading kernel into memory. " , 0
 
-%include "idt.asm"
+; %include "idt.asm"
 
 
 

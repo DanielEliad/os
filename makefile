@@ -11,15 +11,14 @@ all: os_image
 run: all
 	qemu-system-i386 -fda os_image
 
-os_image: kernel.bin #boot/boot_sect.bin
+os_image: boot/boot_sect.bin kernel.bin
 	cat $^ > os_image
 
-kernel.bin: boot/boot_sect.o kernel_entry.o ${OBJ} 
-#	nasm -f aout -I boot/ -o start.o boot/boot_sect.asm
-	ld -m32 -m elf_i386 -o $@ -Ttext 0x1000 $^   --oformat binary
+kernel.bin: boot/idt.o kernel_entry.o ${OBJ} 
+	ld -m32 -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary -nostdlib
 
 %.o: %.c ${HEADERS}
-	g++ -std=c11 -m32 -ffreestanding -c $< -o $@ -march=i386
+	gcc -fno-leading-underscore -std=c11 -m32 -ffreestanding -c $< -o $@ -march=i386
 
 %.o: %.asm
 	nasm $< -f elf32 -I boot/ -o $@
@@ -29,4 +28,4 @@ kernel.bin: boot/boot_sect.o kernel_entry.o ${OBJ}
 
 clean:
 	rm -rf *.bin *.dis *.o os_image
-	rm -rf kernel/*.o boot/*.bin drivers/*.o
+	rm -rf kernel/*.o boot/*.bin boot/*.o drivers/*.o

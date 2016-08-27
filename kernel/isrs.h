@@ -5,10 +5,9 @@
 #include "../drivers/screen.h"
 
 
-void fault_handler(struct regs *r);
+
 
 void isrs_install();
-
 
 
 /* This defines what the stack looks like after an ISR was running */
@@ -20,5 +19,7 @@ struct regs
     unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */ 
 };
 
+
+void fault_handler(struct regs *r);
 
 //#endif
