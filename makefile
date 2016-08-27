@@ -14,8 +14,8 @@ run: all
 os_image: boot/boot_sect.bin kernel.bin
 	cat $^ > os_image
 
-kernel.bin: boot/idt.o kernel_entry.o ${OBJ} 
-	ld -m32 -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary -nostdlib
+kernel.bin: kernel_entry.o ${OBJ} boot/idt.o boot/ISRs.o
+	ld -m32 -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 %.o: %.c ${HEADERS}
 	gcc -fno-leading-underscore -std=c11 -m32 -ffreestanding -c $< -o $@ -march=i386

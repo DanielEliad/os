@@ -1,4 +1,3 @@
-section .text
 global isr0
 global isr1
 global isr2
