@@ -16,8 +16,8 @@ disk_load:	;Load DH sectors to ES:BX from drive DL
 	ret
 
 	disk_error:
-		mov bx, DISK_ERROR_MSG
-		call print_string
+		; mov bx, DISK_ERROR_MSG
+		; call print_string
 		jmp $
 
 DISK_ERROR_MSG db "Disk read error!",0
