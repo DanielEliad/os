@@ -14,7 +14,7 @@ run: all
 os_image: boot/boot_sect.bin kernel.bin
 	cat $^ > os_image
 
-kernel.bin: kernel_entry.o ${OBJ} boot/idt.o boot/ISRs.o
+kernel.bin: kernel_entry.o ${OBJ} boot/idt.o boot/ISRs.o boot/IRQs.o
 	ld -m32 -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 %.o: %.c ${HEADERS}
