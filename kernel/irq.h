@@ -5,6 +5,14 @@
 #include "IO.h"
 #include "idt.h"
 
+/* This holds custom IRQ handlers for each IRQ */
+void *irq_routines[16] =
+{
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+};
+
+
 /* This installs a custom IRQ handler for the given IRQ */
 void irq_install_handler(int irq, void (*handler)(struct regs *r));
 

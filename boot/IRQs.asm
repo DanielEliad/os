@@ -30,7 +30,7 @@ irq1:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 33
     jmp irq_common_stub
 
 
@@ -39,7 +39,7 @@ irq2:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 34
     jmp irq_common_stub
 
 
@@ -48,7 +48,7 @@ irq3:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 35
     jmp irq_common_stub
 
 
@@ -57,7 +57,7 @@ irq4:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 36
     jmp irq_common_stub
 
 
@@ -66,7 +66,7 @@ irq5:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 37
     jmp irq_common_stub
 
 
@@ -75,7 +75,7 @@ irq6:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 38
     jmp irq_common_stub
 
 
@@ -84,7 +84,7 @@ irq7:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 39
     jmp irq_common_stub
 
 
@@ -93,7 +93,7 @@ irq8:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 40
     jmp irq_common_stub
 
 
@@ -102,7 +102,7 @@ irq9:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 41
     jmp irq_common_stub
 
 
@@ -111,7 +111,7 @@ irq10:
 	cli
     push byte 0    ; Note that these don't push an error code on the stack:
                    ; We need to push a dummy error code
-    push byte 32
+    push byte 42
     jmp irq_common_stub
 
 
