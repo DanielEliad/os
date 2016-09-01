@@ -20,6 +20,9 @@ extern void irq15();
 /* This installs a custom IRQ handler for the given IRQ */
 void irq_install_handler(int irq, void (*handler)(struct regs *r)) {
     irq_routines[irq] = handler;
+    print("GOT HERE\n");
+    print(itoa(irq));
+    print("\n");
 }
 
 /* This clears the handler for a given IRQ */
@@ -69,6 +72,9 @@ void irq_remap(void)
 	is just like installing the exception handlers 
 */
 void irq_install() {
+    for(int i = 0;i<sizeof(irq_routines)-sizeof(void*);i++) {
+        irq_routines[i] = 0;
+    }
     irq_remap();
     void (*irqs[32])() =
     					{
