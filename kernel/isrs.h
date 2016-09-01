@@ -4,7 +4,7 @@
 #include "idt.h"
 #include "../drivers/screen.h"
 #include "isr_regs.h"
-
+#include "utils.h"
 
 
 void isrs_install();

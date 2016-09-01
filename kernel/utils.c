@@ -17,7 +17,7 @@ void memory_set(char* source, char val, int n_bytes) {
 char* itoa(int num) {
 	int i = 0;
     char isNegative = 0;
- 	char str[num%10 + 1];
+ 	char str[get_num_digits(num) + 1];
     /* Handle 0 explicitely, otherwise empty string is printed for 0 */
     if (num == 0)
     {
@@ -38,7 +38,7 @@ char* itoa(int num) {
     while (num != 0)
     {
         int rem = num % 10;
-        str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0';
+        str[i++] = rem + '0';
         num = num/10;
     }
  
@@ -69,9 +69,22 @@ void reverse(char s[]) {
 int strlen(char s[]) {
 	int i = 0;
 	int len = 0;
-	while(s[i] != 0) {
+	while(s[i++] != 0) {
 		len++;
 	}
 
 	return len;
+}
+
+
+int get_num_digits(int num) {
+	if(num == 0) return 1;
+    int i = 0;
+    if(num < 0) i++;
+	while(num != 0) {
+		i++;
+		num = num/10;
+	}
+
+	return i;
 }

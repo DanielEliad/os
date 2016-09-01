@@ -130,9 +130,13 @@ void isrs_install() {
 *  happening and messing up kernel data structures */
 void fault_handler(struct regs *r)
 {
+    print("HANDLING ISR\n");
+    print("ISR#: ");
+    print(itoa(r->int_no));
+    print("\n");
     if (r->int_no < 32)
     {
-        print(exception_messages[r->int_no]);
+        print(itoa(exception_messages[r->int_no]));
     	print(" Exception. System Halted!\n");
         for (;;);
     }

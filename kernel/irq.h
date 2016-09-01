@@ -10,7 +10,7 @@
 //!!!
 
 /* This holds custom IRQ handlers for each IRQ */
-void *irq_routines[16];
+extern void *irq_routines[16];
 
 
 /* This installs a custom IRQ handler for the given IRQ */

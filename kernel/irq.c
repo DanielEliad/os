@@ -17,12 +17,19 @@ extern void irq13();
 extern void irq14();
 extern void irq15();
 
+void* irq_routines[16] = 
+                        {   0,0,0,0,
+                            0,0,0,0,
+                            0,0,0,0,
+                            0,0,0,0
+                        };
+
 /* This installs a custom IRQ handler for the given IRQ */
 void irq_install_handler(int irq, void (*handler)(struct regs *r)) {
     irq_routines[irq] = handler;
-    print("GOT HERE\n");
-    print(itoa(irq));
-    print("\n");
+    //print("GOT HERE\n");
+    //print(itoa(irq));
+    //print("\n");
 }
 
 /* This clears the handler for a given IRQ */
@@ -72,9 +79,6 @@ void irq_remap(void)
 	is just like installing the exception handlers 
 */
 void irq_install() {
-    for(int i = 0;i<sizeof(irq_routines)-sizeof(void*);i++) {
-        irq_routines[i] = 0;
-    }
     irq_remap();
     void (*irqs[32])() =
     					{
@@ -112,6 +116,12 @@ void irq_install() {
 	send out the END OF INTERRUPT (EOI) command 0x20
 */
 void irq_handler(struct regs *r) {
+    
+    //DEBUG PRINTS
+    //print("\nHANDLING IRQ\n");
+    //print("IRQ#: ");
+    //print(itoa(r->int_no));
+
     /* This is a blank function pointer */
     void (*handler)(struct regs *r);
 

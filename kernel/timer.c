@@ -4,7 +4,7 @@ void timer_phase(int hz) {
 	int divisor = 1193180 / hz;       /* Calculate our divisor */
     port_byte_out(0x43, 0x36);             /* Set our command byte 0x36 */
     port_byte_out(0x40, divisor & 0xFF);   /* Set low byte of divisor */
-    port_byte_out(0x41, divisor >> 8);//maybe 0x41??     /* Set high byte of divisor */
+    port_byte_out(0x40, divisor >> 8);     /* Set high byte of divisor */
 }
 
 
@@ -18,12 +18,10 @@ void timer_phase(int hz) {
 void timer_handler(struct regs *r) {
     /* Increment our 'tick count' */
     timer_ticks++;
-    print(itoa(timer_ticks));
-    print("\n");
-    /* Every 100 clocks (approximately 1 second), we will
+
+    /* Every 100 clocks (1 second), we will
     *  display a message on the screen */
-    if (timer_ticks % 100 == 0)
-    {
+    if (timer_ticks % 100 == 0) {
         print("One second has passed\n");
     }
 }
@@ -32,12 +30,15 @@ void timer_handler(struct regs *r) {
 *  into IRQ0 */
 void timer_install() {
 	timer_ticks = 0;
-	print(itoa(timer_ticks));
-	print("\n");
+	
 
-	timer_phase(100); //set the tick time to 100 HZ
+    timer_phase(100); //set the tick time to 100 HZ
     
-    /* Installs 'timer_handler' to IRQ0 */
+    
+    //print(itoa(timer_ticks));
+	//print("\n\n\n\n\n\n");
+	/* Installs 'timer_handler' to IRQ0 */
+	//print(timer_handler);
     irq_install_handler(0, timer_handler);
 }
 
