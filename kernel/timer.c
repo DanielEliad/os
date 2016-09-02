@@ -1,7 +1,7 @@
 #include "timer.h"
 
 void timer_phase(int hz) {
-	int divisor = 1193180 / hz;       /* Calculate our divisor */
+	int divisor = INPUT_TIMER_HZ / hz;       /* Calculate our divisor */
     port_byte_out(0x43, 0x36);             /* Set our command byte 0x36 */
     port_byte_out(0x40, divisor & 0xFF);   /* Set low byte of divisor */
     port_byte_out(0x40, divisor >> 8);     /* Set high byte of divisor */
