@@ -5,7 +5,7 @@
 #include "IO.h"
 #include "../drivers/screen.h"
 #include "utils.h"
-#define INPUT_TIMER_HZ = 1193180; //In HZ
+#define INPUT_TIMER_HZ 1193180 //In HZ
 
 void timer_phase(int hz);
 int timer_ticks;

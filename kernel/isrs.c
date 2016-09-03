@@ -136,7 +136,7 @@ void fault_handler(struct regs *r)
     print("\n");
     if (r->int_no < 32)
     {
-        print(itoa(exception_messages[r->int_no]));
+        print(exception_messages[r->int_no]);
     	print(" Exception. System Halted!\n");
         for (;;);
     }
