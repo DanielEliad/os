@@ -3,6 +3,7 @@
 #include "idt.h"
 #include "irq.h"
 #include "timer.h"
+#include "keyboard.h"
 
 void main () {
 	clear_screen();
@@ -11,6 +12,7 @@ void main () {
 	irq_install();
 	__asm__ __volatile__ ("sti");
 	timer_install();
+	keyboard_install();
 	//timer_wait(5);
 	print("I am the Tal OS...\nT.A.L.O.S\n    Tal\n    Awesome\n    Lovely\n    Overwatch\n    System");
 	for(;;);

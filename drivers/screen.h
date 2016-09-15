@@ -21,6 +21,7 @@ void print_at(const char* message, int col, int row);
 int get_col(int offset);
 int get_row(int offset);
 void print(const char* message);
+void printch(char ch);
 void clear_screen();
 int handle_scrolling(int cursor_offset);
 char gettextcolor(unsigned char forecolor, unsigned char backcolor);

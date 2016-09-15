@@ -83,6 +83,11 @@ void print(const char* message) {
 	print_at(message, -1, -1);
 }
 
+void printch(char ch) {
+	int offset = get_cursor();
+	print_char(ch, get_col(offset), get_row(offset), WHITE_ON_BLACK);	
+}
+
 void clear_screen() {
 	for(int row = 0; row < MAX_ROWS; ++row) {
 		for(int col = 0; col < MAX_COLS; ++col) {

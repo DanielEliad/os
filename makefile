@@ -8,6 +8,9 @@ OBJ = ${CPP_SOURCES:.c=.o}
 # Defaul build target
 all: os_image
 
+debug: all
+	qemu-system-i386 -s -S -fda os_image
+
 run: all
 	qemu-system-i386 -fda os_image
 
@@ -18,7 +21,7 @@ kernel.bin: kernel_entry.o ${OBJ} boot/idt.o boot/ISRs.o boot/IRQs.o
 	ld -m32 -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 %.o: %.c ${HEADERS}
-	gcc -fno-leading-underscore -std=c11 -m32 -ffreestanding -c $< -o $@ -march=i386
+	gcc -fno-leading-underscore -std=c11 -m32 -ffreestanding -c $< -o $@ -march=i386 -g
 
 %.o: %.asm
 	nasm $< -f elf32 -I boot/ -o $@
