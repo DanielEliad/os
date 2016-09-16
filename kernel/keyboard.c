@@ -49,12 +49,12 @@ unsigned char keyboard_map[128] =
 
 
 void keyboard_handler(struct regs *r) {
-    unsigned char status = port_byte_in(KEYBOARD_STATUS_REGISTER);
-    if(!(status &0x01)) {
-        print("NOT FULL");
-        return;
-    }
-    short scancode = port_byte_in(KEYBOARD_DATA_REGISTER);
+    keyboard_wait_outport();
+    char scancode = port_byte_in(KEYBOARD_DATA_REGISTER);
+    //if(!(port_byte_in(KEYBOARD_STATUS_REGISTER) & 0x01)) {
+    //    return;
+    //}
+
     /*
         if the top bit is set, the key
         has just been released.
@@ -67,26 +67,66 @@ void keyboard_handler(struct regs *r) {
     //Here, a key was just pressed. 
     //If the key was held down there will be repeated key press interrupts
     else {
-        //print("Button clicked:" + keyboard_map[scancode]);
-        //printch(keyboard_map[(unsigned char)scancode]);
-        print("\nButton clicked:");
-        char s[2];
-        s[0] = keyboard_map[(unsigned char) scancode];
-        s[1] = '\0';
-        print(s);
-        print("\n");
-        print(itoa(keyboard_map[(unsigned char)scancode]));
-        print("\n-----------\n");
+        print("Button clicked:");
+        printch(keyboard_map[(unsigned char)scancode]);
+        //print("\nButton clicked:");
+        // char s[2];
+        // s[0] = keyboard_map[(unsigned char) scancode];
+        // s[1] = 0;
+        // print(s);
+        //print("\n");
+        //print(itoa(keyboard_map[(unsigned char)scancode]));
+        //print("\n-----------\n");
         print(itoa(scancode));
     }
 
 }
 
 void keyboard_install() {
+    
     //Install the keyboard handler to IRQ1
-    port_byte_out(KEYBOARD_STATUS_REGISTER, KEYBOARD_DATA_REGISTER);
-    //port_byte_out(KEYBOARD_DATA_REGISTER, 7);
     irq_install_handler(1, keyboard_handler);
+
+    keyboard_wait_outport();
+    port_byte_out(KEYBOARD_DATA_REGISTER, KEYBOARD_RESET_COMMAND);      // Reset kb
+
+
+    keyboard_set_scancode_set(2);
+
+    //disables keyboard scan code translation
+    disable_translation();
+    
+
 }
 
+
+void disable_translation() {
+    keyboard_wait_outport();
+    port_byte_out(KEYBOARD_STATUS_REGISTER, KEYBOARD_READ_CONFIGURATION);                // Send "read configuration byte" command
+
+    keyboard_wait_outport();
+    char config = port_byte_in(KEYBOARD_DATA_REGISTER);                  // foo = old value of configuration byte
+
+    config = config & ~(1 << 6);                // foo = old value with translation disabled
+
+    keyboard_wait_outport();
+    port_byte_out(KEYBOARD_STATUS_REGISTER, KEYBOARD_DATA_REGISTER);                // Send "write configuration byte" command
+    keyboard_wait_outport();
+    port_byte_out(KEYBOARD_DATA_REGISTER, config);                 // Set configuration byte to disable translation
+}
+
+void keyboard_wait_outport() {
+    while(!(port_byte_in(KEYBOARD_STATUS_REGISTER) &0x02));
+}
+
+
+
+void keyboard_set_scancode_set(unsigned char set) {
+    if(set >3 || set <= 0) return;
+    keyboard_wait_outport();
+    port_byte_out(KEYBOARD_DATA_REGISTER, 0xf0);
+
+    keyboard_wait_outport();
+    port_byte_out(KEYBOARD_DATA_REGISTER, set);
+}
 

@@ -2,3 +2,4 @@
 *.o
 os_image
 *.dis
+debug-symbols

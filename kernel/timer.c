@@ -22,7 +22,7 @@ void timer_handler(struct regs *r) {
     /* Every 100 clocks (1 second), we will
     *  display a message on the screen */
     if (timer_ticks % 100 == 0) {
-        print("One second has passed\n");
+        //print("One second has passed\n");
     }
 }
 

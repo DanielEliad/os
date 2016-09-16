@@ -9,6 +9,7 @@ OBJ = ${CPP_SOURCES:.c=.o}
 all: os_image
 
 debug: all
+	ld -m32 -m elf_i386 -i -o  $@-symbols ${OBJ} kernel_entry.o boot/idt.o boot/ISRs.o boot/IRQs.o
 	qemu-system-i386 -s -S -fda os_image
 
 run: all
