@@ -132,7 +132,9 @@ void fault_handler(struct regs *r)
 {
     print("HANDLING ISR\n");
     print("ISR#: ");
-    print(itoa(r->int_no));
+    char str[get_num_digits(r->int_no) + 1];
+    itoa(r->int_no, str);
+    print(str);
     print("\n");
     if (r->int_no < 32)
     {

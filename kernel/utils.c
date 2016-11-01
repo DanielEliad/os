@@ -14,16 +14,15 @@ void memory_set(char* source, char val, int n_bytes) {
 }
 
 
-char* itoa(int num) {
+void itoa(int num, char* str) {
 	int i = 0;
     char isNegative = 0;
- 	char str[get_num_digits(num) + 1];
     /* Handle 0 explicitely, otherwise empty string is printed for 0 */
     if (num == 0)
     {
         str[i++] = '0';
         str[i] = '\0';
-        return str;
+        return;
     }
  
     // In standard itoa(), negative numbers are handled only with 
@@ -51,7 +50,7 @@ char* itoa(int num) {
     // Reverse the string
     reverse(str);
  
-    return str;
+    return;
 }
 
 
