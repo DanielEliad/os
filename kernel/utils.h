@@ -8,6 +8,6 @@ void itoa(int num, char* str);
 void reverse(char s[]);
 int strlen(char s[]);
 int get_num_digits(int num);
-
+char* malloc(int n_bytes);
 
 #endif

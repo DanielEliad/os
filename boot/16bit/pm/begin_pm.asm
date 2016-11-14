@@ -1,3 +1,4 @@
+STACK_OFFSET_PM equ 1024*1024*4 + 0x1000
 [bits 16]
 ; Switch to protected mode
 switch_to_pm:
@@ -22,6 +23,6 @@ mov ss , ax ; data selector we defined in our GDT
 mov es , ax
 mov fs , ax
 mov gs , ax
-mov ebp , 0x90000 ; Update our stack position so it is right
+mov ebp , STACK_OFFSET_PM ; Update our stack position so it is right
 mov esp , ebp ; at the top of the free space.
 jmp BEGIN_PM ; Finally , call some well - known label
