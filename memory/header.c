@@ -23,9 +23,17 @@ void init_pages(char* base, int size) {
 
 	int len_curve = (int)sizeof(curve)/sizeof(curve[0]);
 
-	Header* blocks[len_curve];
-
-	int current = 0;//skip all the headers
+	Header* blocks[len_curve]; // = len_curve * sizeof(Header*)
+	int offset_free_space_after_blocks = sizeof(blocks);
+	int amounts = 0;
+	for (int i = 0; i < len_curve; i++) {
+		float data_size = 1 << (i+5); // 2^(i+5)
+		float frames = (size/data_size);
+		int amount = curve[i]*frames;
+		amounts += amount;
+	}
+	
+	int current = sizeof(blocks) + amounts*sizeof(Header);//skip all the headers
 	for (int i = 0; i < len_curve; ++i) {
 		float data_size = 1 << (i+5); // 2^(i+5)
 		float frames = (size/data_size);
@@ -41,9 +49,9 @@ void init_pages(char* base, int size) {
 			current += data_size;
 		}
 
-		int offset_from_blocks = sizeof(blocks);
-		char* new_current_block_address = base + offset_from_blocks;
+		char* new_current_block_address = base + offset_free_space_after_blocks;
 		memory_copy(&current_block, new_current_block_address, sizeof(current_block));
+		new_current_block_address += sizeof(current_block);
 		blocks[i] = new_current_block_address;
 	}
 
