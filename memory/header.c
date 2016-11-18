@@ -23,6 +23,9 @@ void init_pages(char* base, int size) {
 
 	int len_curve = (int)sizeof(curve)/sizeof(curve[0]);
 
+	// Pointer*** pointer = (Pointer****)(pointerPointer);
+	Header** b = (Header*** )(len_curve);
+
 	Header* blocks[len_curve]; // = len_curve * sizeof(Header*)
 	int offset_free_space_after_blocks = sizeof(blocks);
 	int amounts = 0;
@@ -32,7 +35,7 @@ void init_pages(char* base, int size) {
 		int amount = curve[i]*frames;
 		amounts += amount;
 	}
-	
+
 	int current = sizeof(blocks) + amounts*sizeof(Header);//skip all the headers
 	for (int i = 0; i < len_curve; ++i) {
 		float data_size = 1 << (i+5); // 2^(i+5)
