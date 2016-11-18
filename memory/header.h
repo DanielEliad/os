@@ -1,15 +1,12 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-sturct header {
+typedef struct Headers {
 	char used;
 	unsigned int data_size;
-	char* addr
-}
+} Header;
 
 void init_pages(char* base, int size);
 
 
 #endif
-
-

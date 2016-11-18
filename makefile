@@ -1,6 +1,6 @@
 # Automatically generate lists of sources using wildcards .
-CPP_SOURCES = $(wildcard kernel/*.c drivers/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h)
+CPP_SOURCES = $(wildcard kernel/*.c drivers/*.c memory/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h memory/*.h)
 #$(info  ${CPP_SOURCES})
 # TODO : Make sources dep on all header files .
 # Convert the *.c filenames to *.o to give a list of object files to build

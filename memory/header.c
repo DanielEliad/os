@@ -19,25 +19,32 @@ void init_pages(char* base, int size) {
 		0.0146, // 2^18 = 262144
 		0.0056, // 2^19 = 524288
 		0.0019, // 2^20 = 1048576
-	}
+	};
 
 	int len_curve = (int)sizeof(curve)/sizeof(curve[0]);
-	header[] blocks[len_curve];
+	int amounts = 0;
+	for (int i = 0; i < len_curve; ++i)
+	{
+		float data_size = 1 << (i+5); // 2^(i+5)
+		float frames = (size/data_size);
+		int amount = curve[i]*frames;
+		amounts += amount;
+	}
+
+	Header* blocks[len_curve][amounts];
 	int current = 0;//skip all the headers
 	for (int i = 0; i < len_curve; ++i) {
 		float data_size = 1 << (i+5); // 2^(i+5)
 		float frames = (size/data_size);
 		int amount = curve[i]*frames;
-		header current_block[amount];
+		Header* current_block[amount];
 
 		for(int j = 0; j < amount; j++) {
-			header h = (header){
-				.used = 0,
-				.data_size = data_size,
-				.addr = base + current
-			}
-			current_block[j] = h
-			current += data_size
+			Header* pageStart = base+current;
+			(*pageStart).used = 0;
+			(*pageStart).data_size = data_size - sizeof(Header);
+			current_block[j] = &pageStart;
+			current += data_size;
 		}
 
 		blocks[i] = current_block;
