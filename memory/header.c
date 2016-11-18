@@ -22,32 +22,31 @@ void init_pages(char* base, int size) {
 	};
 
 	int len_curve = (int)sizeof(curve)/sizeof(curve[0]);
-	int amounts = 0;
-	for (int i = 0; i < len_curve; ++i)
-	{
-		float data_size = 1 << (i+5); // 2^(i+5)
-		float frames = (size/data_size);
-		int amount = curve[i]*frames;
-		amounts += amount;
-	}
 
-	Header* blocks[len_curve][amounts];
+	Header* blocks[len_curve];
+
 	int current = 0;//skip all the headers
 	for (int i = 0; i < len_curve; ++i) {
 		float data_size = 1 << (i+5); // 2^(i+5)
 		float frames = (size/data_size);
 		int amount = curve[i]*frames;
-		Header* current_block[amount];
+		Header current_block[amount];
 
 		for(int j = 0; j < amount; j++) {
-			Header* pageStart = base+current;
-			(*pageStart).used = 0;
-			(*pageStart).data_size = data_size - sizeof(Header);
-			current_block[j] = &pageStart;
+			Header pageStart;
+			pageStart.addr = base+current;
+			pageStart.used = 0;
+			pageStart.data_size = data_size;
+			current_block[j] = pageStart;
 			current += data_size;
 		}
 
-		blocks[i] = current_block;
+		int offset_from_blocks = sizeof(blocks);
+		char* new_current_block_address = base + offset_from_blocks;
+		memory_copy(&current_block, new_current_block_address, sizeof(current_block));
+		blocks[i] = new_current_block_address;
 	}
+
+	memory_copy(&blocks, base, sizeof(blocks));
 
 }
