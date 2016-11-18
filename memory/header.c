@@ -21,6 +21,8 @@ void init_pages(char* base, int size) {
 		0.0019, // 2^20 = 1048576
 	};
 
+
+
 	int current = 0;
 	for (int i = 0; i < (int)sizeof(curve)/sizeof(curve[0]); ++i) {
 		float data_size = 1 << (i+5); // 2^(i+5)
@@ -28,12 +30,11 @@ void init_pages(char* base, int size) {
 		int amount = curve[i]*frames;
 
 		for(int j = 0; j < amount; j++) {
-			Header* pageStart = *(&base+current);
-			pageStart = {	.used = 0,
-				.data_size = data_size - sizeof(header)
-			}
+			Header* pageStart = *(base+current);
+			(*pageStart).used = 0;
+			(*pageStart).data_size = data_size - sizeof(Header);
 
-			current += data_size + sizeof(header);
+			current += data_size + sizeof(Header);
 		}
 	}
 

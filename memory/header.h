@@ -1,7 +1,7 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-typedef struct Headers {
+typedef struct {
 	char used;
 	unsigned int data_size;
 } Header;
