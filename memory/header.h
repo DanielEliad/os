@@ -8,7 +8,7 @@
 typedef struct {
 	char used;
 	unsigned int data_size;
-	char* addr;
+	unsigned int addr;
 } Header;
 
 typedef struct {

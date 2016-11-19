@@ -1,6 +1,14 @@
 #include "header.h"
 
 
+void write_header(Header h, unsigned int addr) {
+	memory_copy(&h, addr, (int) sizeof(Header));
+}
+
+void write_block(Block b, unsigned int addr) {
+	memory_copy(&b, addr, (int) sizeof(Header));
+}
+
 void init_pages(int size) {
 	float curve[len_curve] = {
 		0.0019, // 2^5 = 32
@@ -21,10 +29,6 @@ void init_pages(int size) {
 		0.0019, // 2^20 = 1048576
 	};
 
-
-
-	Block blocks[len_curve]; // = len_curve * sizeof(Header*)
-	int offset_free_space_after_blocks = sizeof(blocks);
 	int amounts = 0;
 	for (int i = 0; i < len_curve; i++) {
 		float data_size = 1 << (i+5); // 2^(i+5)
@@ -32,56 +36,106 @@ void init_pages(int size) {
 		int amount = curve[i]*frames;
 		amounts += amount;
 	}
-
-	int current = sizeof(blocks) + amounts*sizeof(Header);//skip all the headers
-	for (int i = 0; i < len_curve; ++i) {
+	unsigned int data_addr = base + len_curve*(sizeof(Block)) + amounts*(sizeof(Header));
+	unsigned int header_addr = base + len_curve*(sizeof(Block));
+	unsigned int block_addr = base;
+	for (int i = 0; i < len_curve; ++i) {	//for each block
 		float data_size = 1 << (i+5); // 2^(i+5)
 		float frames = (size/data_size);
 		int amount = curve[i]*frames;
-
-		
-		Header headers[amount];
-
-		for(int j = 0; j < amount; j++) {
+		unsigned int first_header_of_block_addr = header_addr;
+		for (int j = 0; j < amount; ++j) {
 			Header pageStart;
-			pageStart.addr = base+current;
-			pageStart.used = 0;
+			pageStart.addr = data_addr;
 			pageStart.data_size = data_size;
-			headers[j] = pageStart;
-			current += data_size;
+			pageStart.used = 0;
+			data_addr += data_size;
+			write_header(pageStart, header_addr);
+			header_addr += sizeof(Header);
 		}
 
-		
-
-		char* new_current_block_address = base + offset_free_space_after_blocks;
-		memory_copy(&headers, new_current_block_address, sizeof(headers));
-		
-		Block current_block;
-		current_block.headers = new_current_block_address;
-		current_block.len = amount;
-		
-		offset_free_space_after_blocks += sizeof(headers);		
-		
-		blocks[i] = current_block;
+		Block b;
+		b.headers = first_header_of_block_addr;
+		b.len = amount;
+		write_block(b, block_addr);
+		block_addr += sizeof(Block);
 	}
+	// Block blocks[len_curve]; // = len_curve * sizeof(Header*)
+	// int offset_free_space_after_blocks = ((int) sizeof(Block))* len_curve;
+	// int amounts = 0;
+	// for (int i = 0; i < len_curve; i++) {
+	// 	float data_size = 1 << (i+5); // 2^(i+5)
+	// 	float frames = (size/data_size);
+	// 	int amount = curve[i]*frames;
+	// 	amounts += amount;
+	// }
 
-	memory_copy(&blocks, base, sizeof(blocks));
+	// int current = sizeof(blocks) + amounts*sizeof(Header);//skip all the headers
+	// for (int i = 0; i < len_curve; ++i) {
+	// 	float data_size = 1 << (i+5); // 2^(i+5)
+	// 	float frames = (size/data_size);
+	// 	int amount = curve[i]*frames;
+
+		
+	// 	Header headers[amount];
+
+	// 	for(int j = 0; j < amount; j++) {
+	// 		// Header pageStart = *(volatile Header*)(base + offset_free_space_after_blocks)
+	// 		Header pageStart;
+	// 		pageStart.addr = base+current;
+	// 		pageStart.used = 0;
+	// 		pageStart.data_size = data_size;
+	// 		headers[j] = pageStart;
+	// 		current += data_size;
+	// 	}
+
+		
+
+	// 	char* new_current_header_address = base + offset_free_space_after_blocks;
+	// 	Block current_block;
+	// 	current_block.headers = new_current_header_address;
+	// 	current_block.len = amount;
+	// 	for (int h = 0; h < amount; ++h) {
+	// 		memory_copy(&(headers[h]), new_current_header_address, (int) sizeof(Header));
+	// 		new_current_header_address += (int) sizeof(Header);
+	// 	}
+		
+	// 	blocks[i] = current_block;
+	// }
+
+	// for (int i = 0; i < len_curve; ++i)
+	// {
+	// 	memory_copy(&(blocks[i]), base + i*sizeof(Block), sizeof(Block));	
+	// }
 }
 
 char* malloc(int n_bytes) {
-	Block* blocks = (Block* *) base;
+	Block* blocks = (Block* ) base;
 	char block = find_category(n_bytes);
 	if(block == -1) {
 		//error handling
 		print("CATEGORY NOT FOUND\n");
 		return 0;
 	}
-
+	char str[20];
+	itoa(block, str);
+	print("category: ");
+	print(str);
+	print("\n");
+	itoa(n_bytes,str);
+	print("n_bytes: ");
+	print(str);
+	print("\n");
 	Block correct_block = blocks[block];
 	// print("GOT HERE\n");
-	// char str[20];
+	itoa(correct_block.len, str);
+	print("len: ");
+	print(str);
+	print("\n");
 	// itoa(correct_block.len, str);
+	// print("len: ");
 	// print(str);
+	// print("\n");
 	for (int i = 0; i < correct_block.len; ++i)	{
 
 		Header h = correct_block.headers[i];
