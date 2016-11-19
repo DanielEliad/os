@@ -2,13 +2,23 @@
 #define HEADER_H
 #include "../kernel/utils.h"
 
+#define base 0x40000000
+#define len_curve 16
+
 typedef struct {
 	char used;
 	unsigned int data_size;
 	char* addr;
 } Header;
 
-void init_pages(char* base, int size);
+typedef struct {
+	Header* headers;
+	int len;
+} Block;
+
+void init_pages(int size);
+char* malloc(int n_bytes);
+char find_category(int n);
 
 
 #endif

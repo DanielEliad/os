@@ -87,8 +87,3 @@ int get_num_digits(int num) {
 
 	return i;
 }
-
-
-char* malloc(int n_bytes) {
-    
-}
