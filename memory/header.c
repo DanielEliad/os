@@ -22,6 +22,7 @@ void init_pages(int size) {
 	};
 
 
+
 	Block blocks[len_curve]; // = len_curve * sizeof(Header*)
 	int offset_free_space_after_blocks = sizeof(blocks);
 	int amounts = 0;
@@ -31,7 +32,7 @@ void init_pages(int size) {
 		int amount = curve[i]*frames;
 		amounts += amount;
 	}
-	
+
 	int current = sizeof(blocks) + amounts*sizeof(Header);//skip all the headers
 	for (int i = 0; i < len_curve; ++i) {
 		float data_size = 1 << (i+5); // 2^(i+5)
