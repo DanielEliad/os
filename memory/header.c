@@ -6,10 +6,23 @@ void write_header(Header h, unsigned int addr) {
 }
 
 void write_block(Block b, unsigned int addr) {
-	memory_copy(&b, addr, (int) sizeof(Header));
+	print("Writing block with len: ");
+	char str1[20];
+	itoa(b.len, str1);
+	print(str1);
+	print("\n");
+	(*((Block*) addr)).len = b.len;
+	(*((Block*) addr)).headers = b.headers;
+	// memory_copy(b, (char*)addr, (int) sizeof(Block));
+	print("TESTING WRITING BlOCK WITH LEN: ");
+	char str[200];
+	itoa((*((Block*) addr)).len, str);
+	print(str);
+	print("\n");
+	
 }
 
-void init_pages(int size) {
+void init_pages(unsigned int size) {
 	float curve[len_curve] = {
 		0.0019, // 2^5 = 32
 		0.0056, // 2^6 = 64
@@ -30,10 +43,11 @@ void init_pages(int size) {
 	};
 
 	int amounts = 0;
+	float smallest_data_size = 1 << (5); // 2^5
 	for (int i = 0; i < len_curve; i++) {
 		float data_size = 1 << (i+5); // 2^(i+5)
-		float frames = (size/data_size);
-		int amount = curve[i]*frames;
+		float frames = (size/smallest_data_size);
+		int amount = (curve[i]*frames)/data_size;
 		amounts += amount;
 	}
 	unsigned int data_addr = base + len_curve*(sizeof(Block)) + amounts*(sizeof(Header));
@@ -41,8 +55,8 @@ void init_pages(int size) {
 	unsigned int block_addr = base;
 	for (int i = 0; i < len_curve; ++i) {	//for each block
 		float data_size = 1 << (i+5); // 2^(i+5)
-		float frames = (size/data_size);
-		int amount = curve[i]*frames;
+		float frames = (size/smallest_data_size); //(size/data_size);
+		int amount = (curve[i]*frames)/data_size;
 		unsigned int first_header_of_block_addr = header_addr;
 		for (int j = 0; j < amount; ++j) {
 			Header pageStart;
@@ -57,6 +71,11 @@ void init_pages(int size) {
 		Block b;
 		b.headers = first_header_of_block_addr;
 		b.len = amount;
+		// print("Set len of block to: ");
+		// char str[200];
+		// itoa(amount, str);
+		// print(str);
+		// print("\n");
 		write_block(b, block_addr);
 		block_addr += sizeof(Block);
 	}
@@ -109,7 +128,7 @@ void init_pages(int size) {
 	// }
 }
 
-char* malloc(int n_bytes) {
+char* malloc(unsigned int n_bytes) {
 	Block* blocks = (Block* ) base;
 	char block = find_category(n_bytes);
 	if(block == -1) {
@@ -117,21 +136,21 @@ char* malloc(int n_bytes) {
 		print("CATEGORY NOT FOUND\n");
 		return 0;
 	}
-	char str[20];
+	char str[200];
 	itoa(block, str);
-	print("category: ");
-	print(str);
-	print("\n");
+	//print("category: ");
+	//print(str);
+	//print("\n");
 	itoa(n_bytes,str);
-	print("n_bytes: ");
-	print(str);
-	print("\n");
-	Block correct_block = blocks[block];
-	// print("GOT HERE\n");
+	//print("n_bytes: ");
+	//print(str);
+	//print("\n");
+	Block correct_block = *(Block *)(base + block*sizeof(Block));//blocks[block];
+	print("GOT HERE\n");
 	itoa(correct_block.len, str);
 	print("len: ");
 	print(str);
-	print("\n");
+	//print("\n");
 	// itoa(correct_block.len, str);
 	// print("len: ");
 	// print(str);

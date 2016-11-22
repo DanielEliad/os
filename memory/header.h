@@ -16,8 +16,8 @@ typedef struct {
 	int len;
 } Block;
 
-void init_pages(int size);
-char* malloc(int n_bytes);
+void init_pages(unsigned int size);
+char* malloc(unsigned int n_bytes);
 char find_category(int n);
 
 
