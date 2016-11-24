@@ -2,7 +2,7 @@
 
 
 void write_header(Header h, unsigned int addr) {
-	memory_copy(&h, addr, (int) sizeof(Header));
+	memory_copy((char*)&h, (char*)addr, (int) sizeof(Header));
 }
 
 void write_block(Block b, unsigned int addr) {
@@ -11,12 +11,14 @@ void write_block(Block b, unsigned int addr) {
 	itoa(b.len, str1);
 	print(str1);
 	print("\n");
-	(*((Block*) addr)).len = b.len;
-	(*((Block*) addr)).headers = b.headers;
+	Block* correctBlock = (Block*) addr;
+	correctBlock->len = b.len;
+	// (*((Block*) addr)).len = b.len;
+	// (*((Block*) addr)).headers = b.headers;
 	// memory_copy(b, (char*)addr, (int) sizeof(Block));
 	print("TESTING WRITING BlOCK WITH LEN: ");
 	char str[200];
-	itoa((*((Block*) addr)).len, str);
+	itoa(correctBlock->len, str);
 	print(str);
 	print("\n");
 	
@@ -69,7 +71,7 @@ void init_pages(unsigned int size) {
 		}
 
 		Block b;
-		b.headers = first_header_of_block_addr;
+		b.headers = (Header*)first_header_of_block_addr;
 		b.len = amount;
 		// print("Set len of block to: ");
 		// char str[200];

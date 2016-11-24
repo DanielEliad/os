@@ -9,12 +9,12 @@ typedef struct {
 	char used;
 	unsigned int data_size;
 	unsigned int addr;
-} Header;
+} __attribute__((packed)) Header;
 
 typedef struct {
 	Header* headers;
 	int len;
-} Block;
+}__attribute__((packed)) Block;
 
 void init_pages(unsigned int size);
 char* malloc(unsigned int n_bytes);

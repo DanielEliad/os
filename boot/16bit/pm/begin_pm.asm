@@ -1,4 +1,4 @@
-STACK_OFFSET_PM equ 1024*1024*4 + 0x1000
+STACK_OFFSET_PM equ 0x3000
 [bits 16]
 ; Switch to protected mode
 switch_to_pm:
