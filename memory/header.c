@@ -6,21 +6,21 @@ void write_header(Header h, unsigned int addr) {
 }
 
 void write_block(Block b, unsigned int addr) {
-	print("Writing block with len: ");
-	char str1[20];
-	itoa(b.len, str1);
-	print(str1);
-	print("\n");
-	Block* correctBlock = (Block*) addr;
-	correctBlock->len = b.len;
+	// print("Writing block with len: ");
+	// char str1[20];
+	// itoa(b.len, str1);
+	// print(str1);
+	// print("\n");
+	// Block* correctBlock = (Block*) addr;
+	// correctBlock->len = b.len;
 	// (*((Block*) addr)).len = b.len;
 	// (*((Block*) addr)).headers = b.headers;
-	// memory_copy(b, (char*)addr, (int) sizeof(Block));
-	print("TESTING WRITING BlOCK WITH LEN: ");
-	char str[200];
-	itoa(correctBlock->len, str);
-	print(str);
-	print("\n");
+	memory_copy((char*)&b, (char*)addr, (int) sizeof(Block));
+	// print("TESTING WRITING BlOCK WITH LEN: ");
+	// char str[200];
+	// itoa(correctBlock->len, str);
+	// print(str);
+	// print("\n");
 	
 }
 
@@ -138,20 +138,20 @@ char* malloc(unsigned int n_bytes) {
 		print("CATEGORY NOT FOUND\n");
 		return 0;
 	}
-	char str[200];
-	itoa(block, str);
+	// char str[200];
+	// itoa(block, str);
 	//print("category: ");
 	//print(str);
 	//print("\n");
-	itoa(n_bytes,str);
+	// itoa(n_bytes,str);
 	//print("n_bytes: ");
 	//print(str);
 	//print("\n");
 	Block correct_block = *(Block *)(base + block*sizeof(Block));//blocks[block];
-	print("GOT HERE\n");
-	itoa(correct_block.len, str);
-	print("len: ");
-	print(str);
+	// print("GOT HERE\n");
+	// itoa(correct_block.len, str);
+	// print("len: ");
+	// print(str);
 	//print("\n");
 	// itoa(correct_block.len, str);
 	// print("len: ");
@@ -162,6 +162,11 @@ char* malloc(unsigned int n_bytes) {
 		Header h = correct_block.headers[i];
 		if(h.used == 0) {	//if h is not being used at the moment
 			h.used = 1;	//mark as used
+			char str[200];
+			itoa(h.addr, str);
+			print("ADDR ALLOCATED: ");
+			print(str);
+			print("\n");
 			return h.addr;	//return the space allocated for your use.
 		}
 	}

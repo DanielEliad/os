@@ -23,11 +23,11 @@ void main () {
 	str[3] = 'L';
 	str[4] = 'O';
 	str[5] = '\0';
-	//print(str);
-	//print("\n");
+	print(str);
+	print("\n");
 	char* buff = malloc(300);
 	itoa(0x40000000, buff);
-	//print(buff);
+	print(buff);
 	//print("I am the Tal OS...\nT.A.L.O.S\n    Tal\n    Awesome\n    Lovely\n    Overwatch\n    System");
 	for(;;);
 }

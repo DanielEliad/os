@@ -3,15 +3,15 @@ gdt_null: ; the mandatory null descriptor
 dd 0x0
 dd 0x0
 gdt_code: ; the code segment descriptor
-; base =0x0 , limit =0xffff ,
+; base =0x0 , limit =0xff00 ,
 ; 1st flags : ( present )1 ( privilege )00 ( descriptor type )1 -> 1001 b
 ; type flags : ( code )1 ( conforming )0 ( readable )1 ( accessed )0 -> 1010 b
-; 2nd flags : ( granularity )1 (32 - bit default )1 (64 - bit seg )0 ( AVL )0 -> 1100 b
-dw 0xffff ; Limit ( bits 0 -15)
+; 2nd flags : ( granularity )0 (32 - bit default )1 (64 - bit seg )0 ( AVL )0 -> 1100 b
+dw 0xff00 ; Limit ( bits 0 -15)
 dw 0x0 ; Base ( bits 0 -15)
 db 0x0 ; Base ( bits 16 -23)
 db 10011010b ; 1st flags , type flags
-db 11001111b ; 2nd flags , Limit ( bits 16 -19)
+db 01001111b ; 2nd flags , Limit ( bits 16 -19)
 db 0x0 ; Base ( bits 24 -31)
 gdt_data: ; the data segment descriptor
 ; Same as code segment except for the type flags :

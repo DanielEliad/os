@@ -2,7 +2,7 @@
 #define HEADER_H
 #include "../kernel/utils.h"
 
-#define base 0x40000000
+#define base 0x100000
 #define len_curve 16
 
 typedef struct {
