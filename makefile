@@ -13,7 +13,7 @@ debug: all
 	qemu-system-i386 -s -S -fda os_image
 
 run: all
-	qemu-system-i386 -fda os_image
+	qemu-system-i386 -fda os_image -m 4G -drive file=hard_disk.raw,index=0,media=disk,format=raw 
 
 os_image: boot/boot_sect.bin kernel.bin
 	cat $^ > os_image
@@ -33,3 +33,7 @@ kernel.bin: kernel_entry.o ${OBJ} boot/idt.o boot/ISRs.o boot/IRQs.o
 clean:
 	rm -rf *.bin *.dis *.o os_image
 	rm -rf kernel/*.o boot/*.bin boot/*.o drivers/*.o
+setup:
+	qemu-img create -f raw -o size=4G hard_disk.raw
+	echo "w" | fdisk -C 208 -H 16 -S 64 hard_disk.raw
+
