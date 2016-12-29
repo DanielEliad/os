@@ -2,6 +2,7 @@
 #ifndef HD_H
 #define HD_H
 
+#include "../kernel/IO.h"
 
 #define C 208
 #define H 16

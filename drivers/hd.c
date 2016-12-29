@@ -1,23 +1,24 @@
 #include "hd.h"
 
-CHS LBA2CHS(unsigned int LBA) {
-	unsigned int cyl = lba/(HD0.head * HD0.sect);
-    unsigned int head = (lba%(HD0.head*HD0.sect))/HD0.sect;
-    unsigned int sect = (lba%(HD0.head*HD0.sect))%HD0.sect+1;
+CHS LBA2CHS(unsigned int lba) {
+
+    unsigned int cyl = lba/(H*S);
+    unsigned int head = (lba%(H*S))/S;
+    unsigned int sect = (lba%(H*S))%S+1;
 
 	CHS chs = {
 		cyl,
 		head,
 		sect
-	}
+	};
 
 	return chs;
 }
 
 
-void HW_RW(unsigned int LBA, unsigned int command, unsigned int sects_to_access, void* buf) {
+void HW_RW(unsigned int lba, unsigned int command, unsigned int sects_to_access, void* buf) {
 	
-	CHS chs = LBA2CHS(LBA);
+	CHS chs = LBA2CHS(lba);
 
 
 	//Wait for the hard driver state till it's ready
@@ -56,11 +57,11 @@ void HW_RW(unsigned int LBA, unsigned int command, unsigned int sects_to_access,
 	port_byte_out(command, HD_PORT_COMMAND);
 
 
-	while (! (inb(HD_PORT_STATUS)&0x8)); //waits for ?
+	while (! (port_byte_in(HD_PORT_STATUS)&0x8)); //let's try this, if it fails: while ((port_byte_in(HD_PORT_STATUS)&0xc0)!=0x40);
 	if (command == HD_READ) {
-		insl(HD_PORT_DATA, buf, sects_to_access<<7);
+		port_sl_in(HD_PORT_DATA, buf, sects_to_access<<7);
 	} else if(command == HD_WRITE) {
-		outsl(buf, sects_to_access<<7, HD_PORT_DATA);
+		port_sl_out(HD_PORT_DATA, buf, sects_to_access<<7);
 	}
 
 

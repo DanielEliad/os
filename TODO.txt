@@ -1,4 +1,4 @@
 void Free(char* mem);
 
-void WriteToDisk()
-void ReadFromDisk()
+void WriteToDisk() # CHECK
+void ReadFromDisk() # CHECK
