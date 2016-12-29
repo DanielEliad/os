@@ -6,6 +6,7 @@
 #include "keyboard.h"
 #include "../memory/header.h"
 #include "../drivers/hd.h"
+#include "../drivers/fs.h"
 
 void main () {
 	clear_screen();
@@ -19,6 +20,7 @@ void main () {
 	init_pages(1<<30);
 	print("TEST\n");
 	verify_DPT();
+	verify_fs();
 	//setup_DPT();
 	// char* str = malloc(6);
 	// str[0] = 'H';

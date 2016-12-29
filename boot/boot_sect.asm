@@ -1,7 +1,7 @@
 ; A boot sector that boots a C kernel in 32 - bit protected mode
 [org 0x7c00]
 KERNEL_OFFSET equ 0x1000  ; This is the memory offset to which we will load our kernel
-STACK_OFFSET equ 0x3000
+STACK_OFFSET equ 0x6000
 mov [BOOT_DRIVE], dl ; BIOS stores our boot drive in DL , so it ’s
 ; best to remember this for later.
 mov bp, STACK_OFFSET ; Set -up the stack.
@@ -27,7 +27,7 @@ load_kernel:
 mov bx , MSG_LOAD_KERNEL ; Print a message to say we are loading the kernel
 call print_string
 mov bx , KERNEL_OFFSET ; Set -up parameters for our disk_load routine , so
-mov dh , 15 ; that we load the first 15 sectors ( excluding
+mov dh , 20 ; that we load the first 15 sectors ( excluding
 mov dl , [ BOOT_DRIVE ] ; the boot sector ) from the boot disk ( i.e. our
 call disk_load ; kernel code ) to address KERNEL_OFFSET
 ret
