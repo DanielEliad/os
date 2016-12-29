@@ -21,6 +21,7 @@ void main () {
 	print("TEST\n");
 	verify_DPT();
 	verify_fs();
+	verify_dir();
 	//setup_DPT();
 	// char* str = malloc(6);
 	// str[0] = 'H';

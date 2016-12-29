@@ -7,9 +7,9 @@ void memory_copy(char* source, char* dest, int n_bytes) {
 }
 
 
-void memory_set(char* source, char val, int n_bytes) {
+void memory_set(char* dest, char val, int n_bytes) {
 	for(int i = 0;i<n_bytes;i++) {
-		*(source + i) = val;
+		*(dest + i) = val;
 	}
 }
 
@@ -75,6 +75,19 @@ int strlen(char s[]) {
 	return len;
 }
 
+void strcopy(char* source, char* dst) {
+    memory_copy(source, dst, strlen(source));
+}
+
+int strcmp(char* s1, char* s2) {
+    int len = strlen(s1);
+    if(len != strlen(s2)) return 0;
+    for(int i = 0; i < strlen(s1); i++) {
+        if(s1[i] != s2[i]) return 0;
+    }
+
+    return 1;
+}
 
 int get_num_digits(int num) {
 	if(num == 0) return 1;

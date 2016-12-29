@@ -61,5 +61,27 @@ int testb(void *s, unsigned int i);
 void verify_fs(void);
 
 
+extern struct INODE iroot;
+
+unsigned int alloc_blk(struct SUPER_BLOCK *sb);
+void free_blk(struct SUPER_BLOCK *sb, unsigned int n);
+
+int alloc_inode(struct SUPER_BLOCK *sb);
+void free_inode(struct SUPER_BLOCK *sb, int n);
+
+
+struct INODE * iget(struct SUPER_BLOCK *sb, struct INODE *inode, int n);\
+void iput(struct SUPER_BLOCK *sb, struct INODE *inode, int n);
+
+void check_root(void);
+
+void stat(struct INODE *inode);
+
+
+void verify_dir(void);
+
+
+
+
 
 #endif
