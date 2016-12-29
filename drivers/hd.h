@@ -3,7 +3,7 @@
 #define HD_H
 
 #include "../kernel/IO.h"
-
+#include "../kernel/utils.h"
 #define C 208
 #define H 16
 #define S 63
@@ -25,6 +25,10 @@
 #define HD_READ         0x20
 #define HD_WRITE        0x30
 
+//Different Types of File Systems
+#define FST_FS	0x2e			/* normal partition */
+#define FST_SW	0x2f			/* swap partition */
+
 typedef struct HD_PARAM {
     unsigned int cyl;
     unsigned int head;
@@ -32,7 +36,8 @@ typedef struct HD_PARAM {
 } CHS;
 
 CHS LBA2CHS(unsigned int LBA);//Linear Block Addressing to Cylinders Headers and Sectors
-void HW_RW(unsigned int LBA, unsigned int command, unsigned int sects_to_access, void* buf);
-
+void HD_RW(unsigned int LBA, unsigned int command, unsigned int sects_to_access, void* buf);
+void setup_DPT(void);
+void verify_DPT(void);
 
 #endif

@@ -5,6 +5,7 @@
 #include "timer.h"
 #include "keyboard.h"
 #include "../memory/header.h"
+#include "../drivers/hd.h"
 
 void main () {
 	clear_screen();
@@ -16,6 +17,9 @@ void main () {
 	keyboard_install();
 	//timer_wait(5);
 	init_pages(1<<30);
+	print("TEST\n");
+	verify_DPT();
+	//setup_DPT();
 	// char* str = malloc(6);
 	// str[0] = 'H';
 	// str[1] = 'E';

@@ -2,3 +2,5 @@ void Free(char* mem);
 
 void WriteToDisk() # CHECK
 void ReadFromDisk() # CHECK
+
+Check what's up with weird error messages from IDT # CHECK (mixed up order of port and value in port_byte_out)

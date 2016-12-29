@@ -9,8 +9,7 @@ mov sp, bp
 mov bx, MSG_REAL_MODE ; Announce that we are starting
 call print_string ; booting from 16 - bit real mode
 call load_kernel ; Load our kernel
-mov bx, MSG_SUCCESS
-call print_string
+
 call switch_to_pm ; Switch to protected mode , from which
 ; we will not return
 jmp $
@@ -18,6 +17,7 @@ jmp $
 %include "16bit/print/print_string.asm"
 %include "16bit/disk/disk_load.asm"
 %include "16bit/pm/gdt.asm"
+;%include "hd0.asm"
 %include "16bit/pm/print_string_pm.asm"
 %include "16bit/pm/switch_to_pm.asm"
 
@@ -30,8 +30,6 @@ mov bx , KERNEL_OFFSET ; Set -up parameters for our disk_load routine , so
 mov dh , 15 ; that we load the first 15 sectors ( excluding
 mov dl , [ BOOT_DRIVE ] ; the boot sector ) from the boot disk ( i.e. our
 call disk_load ; kernel code ) to address KERNEL_OFFSET
-mov bx , MSG_SUCCESS ; Print a message to say we are loading the kernel
-call print_string
 ret
 
 [ bits 32]
@@ -52,7 +50,6 @@ BOOT_DRIVE db 0
 MSG_REAL_MODE db " Started in 16 - bit Real Mode " , 0
 MSG_PROT_MODE db " Successfully landed in 32 - bit Protected Mode " , 0
 MSG_LOAD_KERNEL db " Loading kernel into memory. " , 0
-MSG_SUCCESS db " Successfully loaded kernel into memory ", 0
 ; %include "idt.asm"
 
 
