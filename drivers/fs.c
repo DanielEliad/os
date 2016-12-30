@@ -1,7 +1,5 @@
 #include "fs.h"
 
-struct INODE iroot = {FT_DIR, 2*sizeof(struct DIR_ENTRY), {0,}};
-
 void setb(void *s, unsigned int i) {
 	unsigned char *v = s;
     v += i>>3; // adds the offset divided by 8 (offset in bytes instead of bits)
@@ -30,6 +28,37 @@ int testb(void *s, unsigned int i) {
 }
 
 
+void printHD0(unsigned int* h) {
+	char temp[200];
+
+
+	print("\nPARTITION 1:");
+
+	print("\n    START: ");
+	itoa(h[0], temp);
+	print(temp);
+
+	print("\n    Capacity: ");
+	itoa(h[1], temp);
+	print(temp);
+
+
+	h += 2;
+
+	print("\nPARTITION 2:");
+
+	print("\n    START: ");
+	itoa(h[0], temp);
+	print(temp);
+
+	print("\n    Capacity: ");
+	itoa(h[1], temp);
+	print(temp);
+
+
+
+}
+
 
 void verify_fs(void) {
 	
@@ -37,8 +66,9 @@ void verify_fs(void) {
 
 	unsigned int *q = hd0;
 
+	printHD0(q);
 
-	unsigned char sect[512];
+	unsigned char sect[512] = {0};
     struct SUPER_BLOCK sb;
 
 	unsigned int i = 0, j = 0, m = 0, n = 0;
@@ -194,7 +224,7 @@ unsigned int alloc_blk(struct SUPER_BLOCK *sb) {
 	unsigned char sect[512] = {0};
 	n = ABS_DMAP_BLK(*sb);
 
-	for (; i<sb->sb_dmap_blks; ++i) {
+	for (; i < sb->sb_dmap_blks; ++i) {
 		HD_RW(n, HD_READ, 1, sect);
         for (j=0; j<512*8; ++j) {
             
@@ -248,8 +278,7 @@ void free_inode(struct SUPER_BLOCK *sb, int n) {
 }
 
 
-struct INODE *
-iget(struct SUPER_BLOCK *sb, struct INODE *inode, int n) {
+struct INODE* iget(struct SUPER_BLOCK *sb, struct INODE *inode, int n) {
     unsigned char sect[512] = {0};
     int i = n/INODES_PER_BLK;
     int j = n%INODES_PER_BLK;
@@ -271,13 +300,14 @@ void iput(struct SUPER_BLOCK *sb, struct INODE *inode, int n) {
 
 
 void check_root(void) {
+	struct INODE iroot = {FT_DIR, 2*sizeof(struct DIR_ENTRY), {0,}};
 	extern unsigned int* hd0;
 
 	struct SUPER_BLOCK sb;
     unsigned char sect[512] = {0};
     struct DIR_ENTRY *de = 0;
  
-    sb.sb_start = hd0;
+    sb.sb_start = *(unsigned int *)(hd0);
     HD_RW(ABS_SUPER_BLK(sb), HD_READ, 1, sect);
     memory_copy(sect, &sb, sizeof(struct SUPER_BLOCK));
     HD_RW(ABS_IMAP_BLK(sb), HD_READ, 1, sect);
@@ -287,6 +317,7 @@ void check_root(void) {
             print("\n/ must be inode 0!!!\n");
             for(;;); // halt();
         }
+
 
     	iroot.i_block[0] = alloc_blk(&sb);
         iput(&sb, &iroot, 0);
@@ -317,6 +348,7 @@ void stat(struct INODE *inode) {
 	unsigned int i = 0;
     char sect[512] = {0};
     struct DIR_ENTRY *de;
+
     print("======== stat / ========\n");
     switch (inode->i_mode) {
     case FT_NML:
@@ -326,22 +358,25 @@ void stat(struct INODE *inode) {
         print("Dir,  ");
         break;
     default:
-        print("UNKNOWN FILE TYPE!!");
+        print("UNKNOWN FILE TYPE!!\n");
         for(;;); // halt();
     }
 
-	print("Size: ");
-	char size[get_num_digits(inode->i_size) + 1];
+    print("Size: ");
+	char size[20];
 	itoa(inode->i_size, size);
 	print(size);
 	print(", ");
 
 	print("Blocks: ");
 	for (; i<8; ++i) {
-		char block[get_num_digits(inode->i_block[i]) + 1];
+		// char block[get_num_digits(inode->i_block[i]) + 1];
+		char block[20];
 		itoa(inode->i_block[i], block);
 		print(block);
+		print(", ");		
 	}
+
 
 	HD_RW(inode->i_block[0], HD_READ, 1, sect);
 	switch (inode->i_mode) {
@@ -349,11 +384,11 @@ void stat(struct INODE *inode) {
 			print("\nName    INode\n");
 			de = (struct DIR_ENTRY *)sect;
 			for (i=0; i< inode->i_size/sizeof(struct DIR_ENTRY); ++i) {
+				char inode_str[20];
 				print(de[i].de_name);
 				print("    ");
-				char inode[get_num_digits(de[i].de_inode) + 1];
-				itoa(de[i].de_inode, inode);
-				print(inode);
+				itoa(de[i].de_inode, inode_str);
+				print(inode_str);
 				print("\n");
         	}
         	break;
@@ -382,6 +417,107 @@ void verify_dir(void) {
 
     memory_copy(sect, &sb, sizeof(struct SUPER_BLOCK));
     stat(iget(&sb, &inode, 0));
+}
+
+
+struct INODE* findFile(char* path) {
+	// Assumes path with syntax /XXX/YYY/ZZZ/ . . .
+	extern unsigned int* hd0;
+
+	unsigned char sectBuffer[512] = {0};
+	unsigned int *q = hd0;
+
+	struct INODE inode;
+    struct SUPER_BLOCK sb;
+    struct DIR_ENTRY* de = 0;
+
+    sb.sb_start = q[0];
+
+    HD_RW(ABS_SUPER_BLK(sb), HD_READ, 1, sectBuffer);
+    memory_copy(sectBuffer, &sb, sizeof(struct SUPER_BLOCK));
+    // Get the INODE BITMAP block
+    // HD_RW(ABS_IMAP_BLK(sb), HD_READ, 1, sect); // Don't need this right now
+
+    iget(&sb, &inode, 0);
+    HD_RW(inode.i_block[0], HD_READ, 1, sectBuffer);
+    de = (struct DIR_ENTRY *)sectBuffer;
+    char* newPath = path + 1;
+    return findFileEx(&sb, newPath, de, &inode);
+
+}
+
+struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* currentDE, 
+	struct INODE* currentDirINODE) {
+	print("\nPath: "); print(path); print("\n");
+	int isDir = 0;
+	char fileName[MAX_NAME_LEN];
+	// char* newPath;
+	char ch = path[0];
+	int i = 0;
+	while(ch != 0) {
+		if (ch == '/') {
+			isDir = 1;
+			print("\nisDir\n");
+			break;
+		} else if(i < MAX_NAME_LEN) {
+			print("\nAdded to fileName\n");
+			fileName[i] = ch;
+			print(fileName);
+		} else {
+			print("\nFILE OR DIR NAME LONGER THAN MAX_NAME_LEN\n");
+			print("PART OF THE FILE NAME THAT FITS: ");
+			print(fileName);
+			print("\n");
+			for(;;); // halt();
+		}
+		// printch(ch);print("\n");
+		i++;
+		// print("I inc\n");
+		// char b[10];
+		// itoa(i, b);
+		// print("I: "); print(b); print("\n");
+		ch = path[i];
+	}
+
+	char b[10];
+	itoa(i, b);
+	print("I: "); print(b); print("\n");
+
+	path += i + isDir; // + i to pass the first i characters of the 
+									// new dir name
+									// + isDir to pass the '/' if it is there
+
+	for (int j = 0; j < currentDirINODE->i_size/sizeof(struct DIR_ENTRY); ++j) {
+		if (strcmp(fileName, currentDE[j].de_name) == 0) {	// They are equal!
+			struct INODE* nextFile;
+			nextFile = iget(sb, &nextFile, currentDE[j].de_inode);
+			// char buffer[20];
+			// itoa(i + isDir, buffer);
+			// print("\ni + isDir: "); print(buffer); print("\n");
+			// print("TEST: "); print(path + 1);
+			if (path[0] != 0) {	// If it is a dir and there is request 
+											// to search in that dir, keep searching
+
+
+				// Load new DE
+				HD_RW(nextFile->i_block[0], HD_READ, 1, currentDE);
+				// print("newPath: "); print(newPath); print("\n");
+				return findFileEx(sb, path, currentDE, nextFile);
+				// Return a different call to findFile again
+			} else {
+				print(fileName); print(" is not a dir");
+				return nextFile;
+			}
+
+		}
+	}
+	print("\nSomething went wrong!\n");
+	print("newPath: "); print(path); print("\n");
+	return -1;
+
+
+	
+
 }
 
 

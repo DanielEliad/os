@@ -22,6 +22,9 @@ void main () {
 	verify_DPT();
 	verify_fs();
 	verify_dir();
+	print("\n--------------------------------------------\n");
+	stat(findFile("/."));
+	print("\n--------------------------------------------");
 	//setup_DPT();
 	// char* str = malloc(6);
 	// str[0] = 'H';

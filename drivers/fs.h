@@ -57,11 +57,12 @@ void setb(void *s, unsigned int i);
 void clrb(void *s, unsigned int i);
 int testb(void *s, unsigned int i);
 
+void printHD0(unsigned int* h);
 
 void verify_fs(void);
 
 
-extern struct INODE iroot;
+//extern struct INODE iroot;
 
 unsigned int alloc_blk(struct SUPER_BLOCK *sb);
 void free_blk(struct SUPER_BLOCK *sb, unsigned int n);
@@ -81,6 +82,10 @@ void stat(struct INODE *inode);
 void verify_dir(void);
 
 
+
+struct INODE* findFile(char* path);
+struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* currentDE, 
+	struct INODE* currentDirINODE);
 
 
 

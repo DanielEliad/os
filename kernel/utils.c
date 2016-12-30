@@ -79,14 +79,14 @@ void strcopy(char* source, char* dst) {
     memory_copy(source, dst, strlen(source));
 }
 
-int strcmp(char* s1, char* s2) {
+int strcmp(char* s1, char* s2) { //returns 1 if they are not equal and 0 if they are
     int len = strlen(s1);
-    if(len != strlen(s2)) return 0;
+    if(len != strlen(s2)) return 1;
     for(int i = 0; i < strlen(s1); i++) {
-        if(s1[i] != s2[i]) return 0;
+        if(s1[i] != s2[i]) return 1;
     }
 
-    return 1;
+    return 0;
 }
 
 int get_num_digits(int num) {
