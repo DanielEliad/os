@@ -27,13 +27,18 @@ void main () {
 	// struct INODE_NUM nestedFile = makeFile("nested", "/worldDir");
 	// struct INODE_NUM worldDir = findFile("/worldDir");
 	// stat(&worldDir.inode);
-	// struct INODE_NUM worldDir2 = findFile("/worldDir/");
-	// stat(&worldDir2.inode);
+	
+	deleteFile("/worldFile");
 	struct INODE_NUM root = findFile("/");
 	stat(&root.inode);
+	struct INODE_NUM worldFile = findFile("/worldFile");
+	stat(&worldFile.inode);
+	
+	// root = findFile("/");
+	// stat(&root.inode);
 	// stat(&folder.inode);
 	//stat(findFile("/helloWorld.txt"));
-	print("\n--------------------------------------------");
+	print("\n--------------------------------------------\n");
 	//setup_DPT();
 	// char* str = malloc(6);
 	// str[0] = 'H';

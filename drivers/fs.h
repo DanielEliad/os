@@ -7,10 +7,11 @@
 #define FT_NML  1
 #define FT_DIR  2
 
+#define BLOCK_LEN 8
 struct INODE {
         unsigned int i_mode;            /* file mode */
         unsigned int i_size;            /* size in bytes */
-        unsigned int i_block[8];
+        unsigned int i_block[BLOCK_LEN];
 };
 
 
@@ -96,6 +97,20 @@ struct INODE_NUM makeGenericFile(char* fileName, char* pathToDir, unsigned int i
 
 struct INODE_NUM makeFile(char* fileName, char* pathToDir);
 struct INODE_NUM makeFolder(char* folderName, char* pathToDir);
+
+
+
+void removeDirEntry(struct DIR_ENTRY* de, unsigned int remove, unsigned int len);
+void removeFile(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i, 
+				struct INODE fileToRemove);
+void removeFolder(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i,
+					struct INODE folderToRemove);
+void deleteFile(char* file);
+
+
+
+
+
 
 
 #endif
