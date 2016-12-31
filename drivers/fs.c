@@ -278,7 +278,7 @@ void free_inode(struct SUPER_BLOCK *sb, int n) {
 }
 
 
-struct INODE* iget(struct SUPER_BLOCK *sb, struct INODE *inode, int n) {
+struct INODE* iget(struct SUPER_BLOCK *sb, struct INODE *inode, unsigned int n) {
     unsigned char sect[512] = {0};
     int i = n/INODES_PER_BLK;
     int j = n%INODES_PER_BLK;
@@ -289,7 +289,7 @@ struct INODE* iget(struct SUPER_BLOCK *sb, struct INODE *inode, int n) {
     return inode;
 }
 
-void iput(struct SUPER_BLOCK *sb, struct INODE *inode, int n) {
+void iput(struct SUPER_BLOCK *sb, struct INODE *inode, unsigned int n) {
     unsigned char sect[512] = {0};
     int i = n/INODES_PER_BLK;
     int j = n%INODES_PER_BLK;
@@ -374,10 +374,10 @@ void stat(struct INODE *inode) {
 		char block[20];
 		itoa(inode->i_block[i], block);
 		print(block);
-		print(", ");		
+		print(", ");
 	}
 
-
+	
 	HD_RW(inode->i_block[0], HD_READ, 1, sect);
 	switch (inode->i_mode) {
 		case FT_DIR:
@@ -420,32 +420,57 @@ void verify_dir(void) {
 }
 
 
-struct INODE* findFile(char* path) {
+void loadSB(struct SUPER_BLOCK* sb, unsigned int sb_start) {
+	char sectBuffer[512]= {0};
+
+	sb->sb_start = sb_start;
+
+    HD_RW(ABS_SUPER_BLK(*sb), HD_READ, 1, sectBuffer);
+    memory_copy(sectBuffer, sb, sizeof(struct SUPER_BLOCK));
+}
+
+
+struct DIR_ENTRY* loadDE(struct INODE* inode, char* sectBuffer) {
+	print("\nBEFORE\n");
+	HD_RW(inode->i_block[0], HD_READ, 1, sectBuffer);
+	print("\nAFTER\n");
+	return (struct DIR_ENTRY *) sectBuffer;
+}
+
+
+struct INODE_NUM findFile(char* path) {
 	// Assumes path with syntax /XXX/YYY/ZZZ/ . . .
 	extern unsigned int* hd0;
 
-	unsigned char sectBuffer[512] = {0};
 	unsigned int *q = hd0;
 
 	struct INODE inode;
     struct SUPER_BLOCK sb;
-    struct DIR_ENTRY* de = 0;
+    struct DIR_ENTRY* de;
+    char sectBuffer[512];
 
-    sb.sb_start = q[0];
+    loadSB(&sb, q[0]);
 
-    HD_RW(ABS_SUPER_BLK(sb), HD_READ, 1, sectBuffer);
-    memory_copy(sectBuffer, &sb, sizeof(struct SUPER_BLOCK));
 
     iget(&sb, &inode, 0);
+
     HD_RW(inode.i_block[0], HD_READ, 1, sectBuffer);
-    de = (struct DIR_ENTRY *)sectBuffer;
+    de = (struct DIR_ENTRY *) sectBuffer;
+
+    if(strcmp("/", path) == 0) {	// They are equal !
+    	struct INODE_NUM result = {inode, 0};
+    	return result;
+    }
+
+
     char* newPath = path + 1;
-    return findFileEx(&sb, newPath, de, &inode);
+    return findFileEx(&sb, newPath, de, inode);
 
 }
 
-struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* currentDE, 
-	struct INODE* currentDirINODE) {
+struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* currentDE, 
+	struct INODE currentDirINODE) {
+	// print("PATH: "); print(path); print("\n");
 	int isDir = 0;
 	char fileName[MAX_NAME_LEN];
 	char ch = path[0];
@@ -472,33 +497,93 @@ struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* c
 									// new dir name
 									// + isDir to pass the '/' if it is there
 
-	for (int j = 0; j < currentDirINODE->i_size/sizeof(struct DIR_ENTRY); ++j) {
+	for (int j = 0; j < currentDirINODE.i_size/sizeof(struct DIR_ENTRY); ++j) {
 
 		if (strcmp(fileName, currentDE[j].de_name) == 0) {	// They are equal!
 
-			struct INODE* nextFile;
-			nextFile = iget(sb, nextFile, currentDE[j].de_inode);
+			struct INODE nextFile;
+			iget(sb, &nextFile, currentDE[j].de_inode);
 
 			if (path[0] != 0) {	// If it is a dir and there is request 
 											// to search in that dir, keep searching
 
 
 				// Load new DE
-				HD_RW(nextFile->i_block[0], HD_READ, 1, currentDE);
+				HD_RW(nextFile.i_block[0], HD_READ, 1, currentDE);
 				// print("newPath: "); print(newPath); print("\n");
 				return findFileEx(sb, path, currentDE, nextFile);
 				// Return a different call to findFile again
 			} else {
-				// print(fileName); print(" is not a dir");
-				return nextFile;
+				struct INODE_NUM res = {nextFile, currentDE[j].de_inode};
+				return res;
 			}
 
 		}
 	}
 	print("\nSomething went wrong!\n");
-	return -1;	
+	struct INODE_NUM dummy = {0, -1};
+	return dummy;
 
 }
+
+
+struct INODE_NUM makeGenericFile(char* fileName, char* pathToDir, unsigned int i_mode) {
+	struct INODE_NUM dir = findFile(pathToDir);
+	// stat(dir.inode);
+
+	extern unsigned int* hd0;
+
+	unsigned int *q = hd0;
+
+	unsigned int sb_start = q[0];
+
+	struct SUPER_BLOCK sb;
+
+	loadSB(&sb, sb_start);
+
+	char s[512];
+	HD_RW(dir.inode.i_block[0], HD_READ, 1, s);
+	// struct DIR_ENTRY* de = loadDE(dir, s);	// Check out why this is causing override of code segment;
+	
+	struct DIR_ENTRY* de = (struct DIR_ENTRY *) s;
+	
+	dir.inode.i_size += sizeof(struct DIR_ENTRY);
+	unsigned int i = dir.inode.i_size/sizeof(struct DIR_ENTRY) - 1;
+	strcopy(fileName, de[i].de_name);
+
+	struct INODE file = {i_mode, 0, {0,}};
+	unsigned int inode_num = alloc_inode(&sb);
+	file.i_block[0] = alloc_blk(&sb);
+	iput(&sb, &file, inode_num);
+	de[i].de_inode = inode_num;
+	HD_RW(dir.inode.i_block[0], HD_WRITE, 1, de);
+	iput(&sb, &dir.inode, dir.inode_num);
+	char tmp[20]; itoa(inode_num, tmp); print("\n inode_num: "); print(tmp); print("\n");
+
+	struct INODE_NUM result = {file, inode_num};
+	return result;
+}
+
+
+struct INODE_NUM makeFile(char* fileName, char* pathToDir) {
+	return makeGenericFile(fileName, pathToDir, FT_NML);
+}
+
+
+
+
+
+
+struct INODE_NUM makeFolder(char* folderName, char* pathToDir) {
+	return makeGenericFile(folderName, pathToDir, FT_DIR);
+}
+
+
+
+
+
+
+
 
 
 

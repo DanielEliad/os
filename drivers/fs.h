@@ -21,6 +21,10 @@ struct DIR_ENTRY {
         int  de_inode;
 };
 
+struct INODE_NUM {
+	struct INODE inode;
+	unsigned int inode_num;
+};
 
 struct SUPER_BLOCK {
 		/* Type of Partition 0x08 */
@@ -71,22 +75,27 @@ int alloc_inode(struct SUPER_BLOCK *sb);
 void free_inode(struct SUPER_BLOCK *sb, int n);
 
 
-struct INODE * iget(struct SUPER_BLOCK *sb, struct INODE *inode, int n);\
-void iput(struct SUPER_BLOCK *sb, struct INODE *inode, int n);
+struct INODE * iget(struct SUPER_BLOCK *sb, struct INODE *inode, unsigned int n);
+void iput(struct SUPER_BLOCK *sb, struct INODE *inode, unsigned int n);
 
 void check_root(void);
 
 void stat(struct INODE *inode);
 
-
 void verify_dir(void);
 
+void loadSB(struct SUPER_BLOCK* sb, unsigned int sb_start);
+struct DIR_ENTRY* loadDE(struct INODE* inode, char* sectBuffer);
+
+struct INODE_NUM findFile(char* path);
+struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* currentDE, 
+	struct INODE currentDirINODE);
 
 
-struct INODE* findFile(char* path);
-struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* currentDE, 
-	struct INODE* currentDirINODE);
+struct INODE_NUM makeGenericFile(char* fileName, char* pathToDir, unsigned int i_mode);
 
+struct INODE_NUM makeFile(char* fileName, char* pathToDir);
+struct INODE_NUM makeFolder(char* folderName, char* pathToDir);
 
 
 #endif
