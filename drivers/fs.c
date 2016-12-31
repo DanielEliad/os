@@ -457,10 +457,10 @@ struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* c
 	while(ch != 0) {
 		if (ch == '/') {
 			isDir = 1;
-			print("\nisDir\n");
+			// print("\nisDir\n");
 			break;
 		} else if(i < MAX_NAME_LEN) {
-			print("\nAdded to fileName\n");
+			// print("\nAdded to fileName\n");
 			fileName[i] = ch;
 			print(fileName);
 		} else {
@@ -479,18 +479,21 @@ struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* c
 		ch = path[i];
 	}
 
-	char b[10];
-	itoa(i, b);
-	print("I: "); print(b); print("\n");
+	// char b[10];
+	// itoa(i, b);
+	// print("I: "); print(b); print("\n");
 
 	path += i + isDir; // + i to pass the first i characters of the 
 									// new dir name
 									// + isDir to pass the '/' if it is there
 
 	for (int j = 0; j < currentDirINODE->i_size/sizeof(struct DIR_ENTRY); ++j) {
+
 		if (strcmp(fileName, currentDE[j].de_name) == 0) {	// They are equal!
+
 			struct INODE* nextFile;
-			nextFile = iget(sb, &nextFile, currentDE[j].de_inode);
+			nextFile = iget(sb, nextFile, currentDE[j].de_inode);
+
 			// char buffer[20];
 			// itoa(i + isDir, buffer);
 			// print("\ni + isDir: "); print(buffer); print("\n");
@@ -505,7 +508,7 @@ struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* c
 				return findFileEx(sb, path, currentDE, nextFile);
 				// Return a different call to findFile again
 			} else {
-				print(fileName); print(" is not a dir");
+				// print(fileName); print(" is not a dir");
 				return nextFile;
 			}
 
