@@ -435,8 +435,6 @@ struct INODE* findFile(char* path) {
 
     HD_RW(ABS_SUPER_BLK(sb), HD_READ, 1, sectBuffer);
     memory_copy(sectBuffer, &sb, sizeof(struct SUPER_BLOCK));
-    // Get the INODE BITMAP block
-    // HD_RW(ABS_IMAP_BLK(sb), HD_READ, 1, sect); // Don't need this right now
 
     iget(&sb, &inode, 0);
     HD_RW(inode.i_block[0], HD_READ, 1, sectBuffer);
@@ -448,21 +446,16 @@ struct INODE* findFile(char* path) {
 
 struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* currentDE, 
 	struct INODE* currentDirINODE) {
-	print("\nPath: "); print(path); print("\n");
 	int isDir = 0;
 	char fileName[MAX_NAME_LEN];
-	// char* newPath;
 	char ch = path[0];
 	int i = 0;
 	while(ch != 0) {
 		if (ch == '/') {
 			isDir = 1;
-			// print("\nisDir\n");
 			break;
 		} else if(i < MAX_NAME_LEN) {
-			// print("\nAdded to fileName\n");
 			fileName[i] = ch;
-			print(fileName);
 		} else {
 			print("\nFILE OR DIR NAME LONGER THAN MAX_NAME_LEN\n");
 			print("PART OF THE FILE NAME THAT FITS: ");
@@ -470,18 +463,10 @@ struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* c
 			print("\n");
 			for(;;); // halt();
 		}
-		// printch(ch);print("\n");
+
 		i++;
-		// print("I inc\n");
-		// char b[10];
-		// itoa(i, b);
-		// print("I: "); print(b); print("\n");
 		ch = path[i];
 	}
-
-	// char b[10];
-	// itoa(i, b);
-	// print("I: "); print(b); print("\n");
 
 	path += i + isDir; // + i to pass the first i characters of the 
 									// new dir name
@@ -494,10 +479,6 @@ struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* c
 			struct INODE* nextFile;
 			nextFile = iget(sb, nextFile, currentDE[j].de_inode);
 
-			// char buffer[20];
-			// itoa(i + isDir, buffer);
-			// print("\ni + isDir: "); print(buffer); print("\n");
-			// print("TEST: "); print(path + 1);
 			if (path[0] != 0) {	// If it is a dir and there is request 
 											// to search in that dir, keep searching
 
@@ -515,11 +496,7 @@ struct INODE* findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* c
 		}
 	}
 	print("\nSomething went wrong!\n");
-	print("newPath: "); print(path); print("\n");
-	return -1;
-
-
-	
+	return -1;	
 
 }
 
