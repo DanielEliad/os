@@ -4,3 +4,7 @@ void WriteToDisk() # CHECK
 void ReadFromDisk() # CHECK
 
 Check what's up with weird error messages from IDT # CHECK (mixed up order of port and value in port_byte_out)
+
+
+void WriteToFile(char* fileName);
+void ReadFromFile(char* fileName, char* buffer, unsigned int len);
