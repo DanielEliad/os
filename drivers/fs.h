@@ -101,10 +101,10 @@ struct INODE_NUM makeFolder(char* folderName, char* pathToDir);
 
 
 void removeDirEntry(struct DIR_ENTRY* de, unsigned int remove, unsigned int len);
-void removeFile(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i, 
-				struct INODE fileToRemove);
-void removeFolder(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i,
-					struct INODE folderToRemove);
+void removeFile(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i,
+				struct INODE fileToRemove, unsigned int len);
+void removeFolder(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i, 
+				struct INODE folderToRemove, unsigned int len);
 void deleteFile(char* file);
 
 

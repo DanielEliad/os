@@ -24,15 +24,16 @@ void main () {
 	print("\n--------------------------------------------\n");
 	// struct INODE_NUM file = makeFile("worldFile", "/.");
 	// struct INODE_NUM folder = makeFolder("worldDir", "/.");
-	// struct INODE_NUM nestedFile = makeFile("nested", "/worldDir");
+	struct INODE_NUM nestedFile = makeFile("nested", "/worldDir");
+	struct INODE_NUM nestedFile2 = makeFile("nested2", "/worldDir");
 	// struct INODE_NUM worldDir = findFile("/worldDir");
 	// stat(&worldDir.inode);
 	
-	deleteFile("/worldFile");
+	// deleteFile("/worldDir");
 	struct INODE_NUM root = findFile("/");
 	stat(&root.inode);
-	struct INODE_NUM worldFile = findFile("/worldFile");
-	stat(&worldFile.inode);
+	struct INODE_NUM worldDir = findFile("/worldDir");
+	stat(&worldDir.inode);
 	
 	// root = findFile("/");
 	// stat(&root.inode);

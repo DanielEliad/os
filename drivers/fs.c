@@ -383,7 +383,7 @@ void stat(struct INODE *inode) {
 		case FT_DIR:
 			print("\nName    INode\n");
 			de = (struct DIR_ENTRY *)sect;
-			for (i=0; i < inode->i_size/sizeof(struct DIR_ENTRY); ++i) {
+			for (i = 0; i < inode->i_size/sizeof(struct DIR_ENTRY); ++i) {
 				char inode_str[20];
 				print(de[i].de_name);
 				print("    ");
@@ -431,9 +431,7 @@ void loadSB(struct SUPER_BLOCK* sb, unsigned int sb_start) {
 
 
 struct DIR_ENTRY* loadDE(struct INODE* inode, char* sectBuffer) {
-	print("\nBEFORE\n");
 	HD_RW(inode->i_block[0], HD_READ, 1, sectBuffer);
-	print("\nAFTER\n");
 	return (struct DIR_ENTRY *) sectBuffer;
 }
 
@@ -470,7 +468,6 @@ struct INODE_NUM findFile(char* path) {
 
 struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* currentDE, 
 	struct INODE currentDirINODE) {
-	// print("PATH: "); print(path); print("\n");
 	int isDir = 0;
 	char fileName[MAX_NAME_LEN];
 	char ch = path[0];
@@ -510,9 +507,7 @@ struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY
 
 				// Load new DE
 				HD_RW(nextFile.i_block[0], HD_READ, 1, currentDE);
-				// print("newPath: "); print(newPath); print("\n");
 				return findFileEx(sb, path, currentDE, nextFile);
-				// Return a different call to findFile again
 			} else {
 				struct INODE_NUM res = {nextFile, currentDE[j].de_inode};
 				return res;
@@ -520,7 +515,7 @@ struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY
 
 		}
 	}
-	print("\nSomething went wrong!\n");
+	print("\nCould not find the file specified. returning dummy\n");
 	struct INODE_NUM dummy = {0, -1};
 	return dummy;
 
@@ -558,8 +553,6 @@ struct INODE_NUM makeGenericFile(char* fileName, char* pathToDir, unsigned int i
 	de[i].de_inode = inode_num;
 	HD_RW(dir.inode.i_block[0], HD_WRITE, 1, de);
 	iput(&sb, &dir.inode, dir.inode_num);
-	char tmp[20]; itoa(inode_num, tmp); print("\n inode_num: "); print(tmp); print("\n");
-
 	struct INODE_NUM result = {file, inode_num};
 	return result;
 }
@@ -580,7 +573,6 @@ struct INODE_NUM makeFolder(char* folderName, char* pathToDir) {
 
 
 void removeDirEntry(struct DIR_ENTRY* de, unsigned int remove, unsigned int len) {
-	
 	// - 1 because we removed the element in the index `remove`
 	unsigned int number_of_bytes = (len - remove - 1)*sizeof(struct DIR_ENTRY);	
 	
@@ -602,22 +594,41 @@ void removeDirEntry(struct DIR_ENTRY* de, unsigned int remove, unsigned int len)
 	memory_set(lastElement, 0, sizeof(struct DIR_ENTRY));
 }
 
-void removeFile(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i, struct INODE fileToRemove) {
+void removeFile(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i, struct INODE fileToRemove, unsigned int len) {
 	for(int j = 0; j < BLOCK_LEN; j++) {
 		if(fileToRemove.i_block[j] != 0) {
 			free_blk(sb, fileToRemove.i_block[j]);
 			fileToRemove.i_block[j] = 0;
 		}
 	}
-
+	
 	free_inode(sb, de[i].de_inode);
-	removeDirEntry(de, i, fileToRemove.i_size/sizeof(struct DIR_ENTRY));
-
 }
 
 
-void removeFolder(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i, struct INODE folderToRemove) {
+void removeFolder(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i, struct INODE folderToRemove, unsigned int len) {
+	char s[512];
+	HD_RW(folderToRemove.i_block[0], HD_READ, 1, s);
+	// struct DIR_ENTRY* de = loadDE(dir, s);	// Check out why this is causing override of code segment;
+	
+	struct DIR_ENTRY* inner_de = (struct DIR_ENTRY *) s;
 
+	for (unsigned int j = 0; j < folderToRemove.i_size/sizeof(struct DIR_ENTRY); ++j) {
+		struct INODE fileToRemove;
+		iget(sb, &fileToRemove, inner_de[j].de_inode);
+		if(fileToRemove.i_mode == FT_NML) {
+			removeFile(sb, inner_de, j, fileToRemove,
+						folderToRemove.i_size/sizeof(struct DIR_ENTRY));
+		} else if(fileToRemove.i_mode == FT_DIR) {
+			removeFolder(sb, inner_de, j, fileToRemove, 
+						folderToRemove.i_size/sizeof(struct DIR_ENTRY));
+		}
+
+		// Remove the dir entry
+		memory_set(inner_de + j*sizeof(struct DIR_ENTRY), 0, sizeof(struct DIR_ENTRY));
+	}
+
+	removeFile(sb, de, i, folderToRemove, len);
 }
 
 
@@ -639,8 +650,6 @@ void deleteFile(char* file) {
 		}
 	}
 
-	print("\npathToDir: "); print(pathToDir); print("\n");
-	print("\nfileName: "); print(fileName); print("\n");
 	struct INODE_NUM dir = findFile(pathToDir);
 	// stat(dir.inode);
 
@@ -661,19 +670,33 @@ void deleteFile(char* file) {
 	struct DIR_ENTRY* de = (struct DIR_ENTRY *) s;
 	
 
-	for (unsigned int i=0; i < dir.inode.i_size/sizeof(struct DIR_ENTRY); ++i) {
+	for (unsigned int i = 0; i < dir.inode.i_size/sizeof(struct DIR_ENTRY); ++i) {
 		if(strcmp(de[i].de_name, fileName) == 0) {	// They are equal !
 			struct INODE fileToRemove;
 			iget(&sb, &fileToRemove, de[i].de_inode);
 			if(fileToRemove.i_mode == FT_NML) {
-				removeFile(&sb, de, i, fileToRemove);
-			} else {
-				removeFolder(&sb, de, i, fileToRemove);
+				removeFile(&sb, de, i, 
+								fileToRemove, dir.inode.i_size/sizeof(struct DIR_ENTRY));
+			} else if(fileToRemove.i_mode == FT_DIR) {
+				removeFolder(&sb, de, i, fileToRemove, dir.inode.i_size/sizeof(struct DIR_ENTRY));
 			}
 
-			break;
+			removeDirEntry(de, i, len);
+
+			//Update the Dir Entries
+			HD_RW(dir.inode.i_block[0], HD_WRITE, 1, de);
+
+
+			//Update the directories size
+			dir.inode.i_size -= sizeof(struct DIR_ENTRY);
+			iput(&sb, &dir.inode, dir.inode_num);
+
+			return;
 		}
 	}
+
+	print("\nDidn't find file or folder in the specified location\n");
+	return;
 }
 
 
