@@ -704,7 +704,54 @@ void deleteFile(char* file) {
 
 
 
+void writeToFile(char* fileName, char* data, unsigned int len) {
+	struct INODE_NUM file = findFile(fileName);
+	unsigned int sects_num = len/512;
 
+	unsigned int block = 0;
+	for(; block < BLOCK_LEN && block < sects_num; block++) {
+		HD_RW(file.inode.i_block[block], HD_WRITE, 1, data + block*512);
+	}
+
+	unsigned int remainder = len%512;
+	if(remainder) {
+		char sect[512];
+		memory_copy(data + sects_num*512, sect, remainder);
+		HD_RW(file.inode.i_block[block], HD_WRITE, 1, sect);
+	}
+
+	file.inode.i_size = len;
+	extern unsigned int* hd0;
+
+	unsigned int *q = hd0;
+
+    struct SUPER_BLOCK sb;
+
+    loadSB(&sb, q[0]);
+
+	iput(&sb, &file.inode, file.inode_num);
+
+
+}
+
+void readFromFile(char* fileName, char* dataBuffer) {
+	struct INODE file = findFile(fileName).inode;
+
+	unsigned int sects_num = file.i_size/512;
+	unsigned int remainder = file.i_size%512;
+
+	unsigned int block = 0;
+	for(; block < BLOCK_LEN && block < sects_num; block++) {
+		HD_RW(file.i_block[block], HD_READ, 1, dataBuffer + block*512);
+	}
+
+	if(remainder) {
+		char sect[512];
+		HD_RW(file.i_block[block], HD_READ, 1, sect);
+		memory_copy(sect, dataBuffer + sects_num*512, remainder);
+	}
+
+}
 
 
 

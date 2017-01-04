@@ -108,7 +108,8 @@ void removeFolder(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i,
 void deleteFile(char* file);
 
 
-
+void writeToFile(char* fileName, char* data, unsigned int len);
+void readFromFile(char* fileName, char* dataBuffer);
 
 
 

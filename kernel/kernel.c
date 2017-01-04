@@ -24,22 +24,28 @@ void main () {
 	print("\n--------------------------------------------\n");
 	// struct INODE_NUM file = makeFile("worldFile", "/.");
 	// struct INODE_NUM folder = makeFolder("worldDir", "/.");
-	struct INODE_NUM nestedFile = makeFile("nested", "/worldDir");
-	struct INODE_NUM nestedFile2 = makeFile("nested2", "/worldDir");
+	// struct INODE_NUM nestedFile = makeFile("nested", "/worldDir");
+	// struct INODE_NUM nestedFile2 = makeFile("nested2", "/worldDir");
 	// struct INODE_NUM worldDir = findFile("/worldDir");
 	// stat(&worldDir.inode);
 	
 	// deleteFile("/worldDir");
-	struct INODE_NUM root = findFile("/");
+	struct INODE_NUM root = findFile("/worldDir");
 	stat(&root.inode);
-	struct INODE_NUM worldDir = findFile("/worldDir");
+	struct INODE_NUM worldDir = findFile("/worldDir/nested");
 	stat(&worldDir.inode);
+	char* str = "Hello World! Tal I <3 U!\n";
+	writeToFile("/worldDir/nested", str, strlen(str));
+	char* tmp[strlen(str)];
+	readFromFile("/worldDir/nested", tmp);
 	
 	// root = findFile("/");
 	// stat(&root.inode);
 	// stat(&folder.inode);
 	//stat(findFile("/helloWorld.txt"));
 	print("\n--------------------------------------------\n");
+
+	print(tmp);
 	//setup_DPT();
 	// char* str = malloc(6);
 	// str[0] = 'H';
