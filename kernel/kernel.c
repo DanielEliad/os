@@ -34,7 +34,7 @@ void main () {
 	stat(&root.inode);
 	struct INODE_NUM worldDir = findFile("/worldDir/nested");
 	stat(&worldDir.inode);
-	char* str = "Hello World! Tal I <3 U!\n";
+	char* str = "Hello World!\n";
 	writeToFile("/worldDir/nested", str, strlen(str));
 	char* tmp[strlen(str)];
 	readFromFile("/worldDir/nested", tmp);
