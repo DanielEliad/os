@@ -109,7 +109,7 @@ void deleteFile(char* file);
 
 
 void writeToFile(char* fileName, char* data, unsigned int len);
-void readFromFile(char* fileName, char* dataBuffer);
+char* readFromFile(char* fileName);
 
 
 

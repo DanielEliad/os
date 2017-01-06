@@ -734,9 +734,9 @@ void writeToFile(char* fileName, char* data, unsigned int len) {
 
 }
 
-void readFromFile(char* fileName, char* dataBuffer) {
+char* readFromFile(char* fileName) {
 	struct INODE file = findFile(fileName).inode;
-
+	char* dataBuffer = malloc(file.i_size);
 	unsigned int sects_num = file.i_size/512;
 	unsigned int remainder = file.i_size%512;
 
@@ -750,6 +750,8 @@ void readFromFile(char* fileName, char* dataBuffer) {
 		HD_RW(file.i_block[block], HD_READ, 1, sect);
 		memory_copy(sect, dataBuffer + sects_num*512, remainder);
 	}
+
+	return dataBuffer;
 
 }
 

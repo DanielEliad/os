@@ -21,7 +21,13 @@ void main () {
 	verify_DPT();
 	verify_fs();
 	verify_dir();
-	print("\n--------------------------------------------\n");
+	char* a = malloc(300);
+	char* str = "Hello World!";
+	memory_copy(str, a, strlen(str) + 1);
+	print(a);
+	free(a);
+
+	// print("\n--------------------------------------------\n");
 	// struct INODE_NUM file = makeFile("worldFile", "/.");
 	// struct INODE_NUM folder = makeFolder("worldDir", "/.");
 	// struct INODE_NUM nestedFile = makeFile("nested", "/worldDir");
@@ -30,22 +36,21 @@ void main () {
 	// stat(&worldDir.inode);
 	
 	// deleteFile("/worldDir");
-	struct INODE_NUM root = findFile("/worldDir");
-	stat(&root.inode);
-	struct INODE_NUM worldDir = findFile("/worldDir/nested");
-	stat(&worldDir.inode);
-	char* str = "Hello World!\n";
-	writeToFile("/worldDir/nested", str, strlen(str));
-	char* tmp[strlen(str)];
-	readFromFile("/worldDir/nested", tmp);
+	// struct INODE_NUM root = findFile("/worldDir");
+	// stat(&root.inode);
+	// struct INODE_NUM worldDir = findFile("/worldDir/nested");
+	// stat(&worldDir.inode);
+	// char* str = "Hello World!\n";
+	// writeToFile("/worldDir/nested", str, strlen(str));
+	// char* tmp = readFromFile("/worldDir/nested");
 	
 	// root = findFile("/");
 	// stat(&root.inode);
 	// stat(&folder.inode);
 	//stat(findFile("/helloWorld.txt"));
-	print("\n--------------------------------------------\n");
+	// print("\n--------------------------------------------\n");
 
-	print(tmp);
+	// print(tmp);
 	//setup_DPT();
 	// char* str = malloc(6);
 	// str[0] = 'H';

@@ -6,22 +6,7 @@ void write_header(Header h, unsigned int addr) {
 }
 
 void write_block(Block b, unsigned int addr) {
-	// print("Writing block with len: ");
-	// char str1[20];
-	// itoa(b.len, str1);
-	// print(str1);
-	// print("\n");
-	// Block* correctBlock = (Block*) addr;
-	// correctBlock->len = b.len;
-	// (*((Block*) addr)).len = b.len;
-	// (*((Block*) addr)).headers = b.headers;
-	memory_copy((char*)&b, (char*)addr, (int) sizeof(Block));
-	// print("TESTING WRITING BlOCK WITH LEN: ");
-	// char str[200];
-	// itoa(correctBlock->len, str);
-	// print(str);
-	// print("\n");
-	
+	memory_copy((char*)&b, (char*)addr, (int) sizeof(Block));	
 }
 
 void init_pages(unsigned int size) {
@@ -81,53 +66,6 @@ void init_pages(unsigned int size) {
 		write_block(b, block_addr);
 		block_addr += sizeof(Block);
 	}
-	// Block blocks[len_curve]; // = len_curve * sizeof(Header*)
-	// int offset_free_space_after_blocks = ((int) sizeof(Block))* len_curve;
-	// int amounts = 0;
-	// for (int i = 0; i < len_curve; i++) {
-	// 	float data_size = 1 << (i+5); // 2^(i+5)
-	// 	float frames = (size/data_size);
-	// 	int amount = curve[i]*frames;
-	// 	amounts += amount;
-	// }
-
-	// int current = sizeof(blocks) + amounts*sizeof(Header);//skip all the headers
-	// for (int i = 0; i < len_curve; ++i) {
-	// 	float data_size = 1 << (i+5); // 2^(i+5)
-	// 	float frames = (size/data_size);
-	// 	int amount = curve[i]*frames;
-
-		
-	// 	Header headers[amount];
-
-	// 	for(int j = 0; j < amount; j++) {
-	// 		// Header pageStart = *(volatile Header*)(base + offset_free_space_after_blocks)
-	// 		Header pageStart;
-	// 		pageStart.addr = base+current;
-	// 		pageStart.used = 0;
-	// 		pageStart.data_size = data_size;
-	// 		headers[j] = pageStart;
-	// 		current += data_size;
-	// 	}
-
-		
-
-	// 	char* new_current_header_address = base + offset_free_space_after_blocks;
-	// 	Block current_block;
-	// 	current_block.headers = new_current_header_address;
-	// 	current_block.len = amount;
-	// 	for (int h = 0; h < amount; ++h) {
-	// 		memory_copy(&(headers[h]), new_current_header_address, (int) sizeof(Header));
-	// 		new_current_header_address += (int) sizeof(Header);
-	// 	}
-		
-	// 	blocks[i] = current_block;
-	// }
-
-	// for (int i = 0; i < len_curve; ++i)
-	// {
-	// 	memory_copy(&(blocks[i]), base + i*sizeof(Block), sizeof(Block));	
-	// }
 }
 
 char* malloc(unsigned int n_bytes) {
@@ -138,35 +76,13 @@ char* malloc(unsigned int n_bytes) {
 		print("CATEGORY NOT FOUND\n");
 		return 0;
 	}
-	// char str[200];
-	// itoa(block, str);
-	//print("category: ");
-	//print(str);
-	//print("\n");
-	// itoa(n_bytes,str);
-	//print("n_bytes: ");
-	//print(str);
-	//print("\n");
 	Block correct_block = *(Block *)(base + block*sizeof(Block));//blocks[block];
-	// print("GOT HERE\n");
-	// itoa(correct_block.len, str);
-	// print("len: ");
-	// print(str);
-	//print("\n");
-	// itoa(correct_block.len, str);
-	// print("len: ");
-	// print(str);
-	// print("\n");
 	for (int i = 0; i < correct_block.len; ++i)	{
-
 		Header h = correct_block.headers[i];
 		if(h.used == 0) {	//if h is not being used at the moment
 			h.used = 1;	//mark as used
-			char str[200];
-			itoa(h.addr, str);
-			print("ADDR ALLOCATED: ");
-			print(str);
-			print("\n");
+			// print("\nALLOCATED HEADER WITH ADDR: ");
+			// char tmp[20]; itoa(h.addr, tmp); print(tmp); print("\n");
 			return h.addr;	//return the space allocated for your use.
 		}
 	}
@@ -175,6 +91,24 @@ char* malloc(unsigned int n_bytes) {
 	return 0;
 }
 
+void free(unsigned int addr) {
+	Block* blocks = (Block* ) base;
+	for(unsigned int i = 0; i < len_curve; i++) {
+		Block tested_block = *(Block *)(base + i*sizeof(Block));//blocks[block];
+		for(unsigned int j = 0; j < tested_block.len; j++) {
+			Header h = tested_block.headers[j];
+			if(h.addr == addr) {
+				h.used = 0;
+				// print("\nCLEARED HEADER WITH ADDR: ");
+				// char tmp[20]; itoa(h.addr, tmp); print(tmp); print("\n");
+				return;
+			}
+		}
+
+
+	}
+
+}
 
 char find_category(int n) {
 	//binary search
