@@ -19,7 +19,7 @@ os_image: boot/boot_sect.bin kernel.bin #Can't make it rely on setup but make su
 	cat $^ > os_image
 
 kernel.bin: kernel_entry.o ${OBJ} boot/idt.o boot/ISRs.o boot/IRQs.o boot/hd0.o
-	ld -m32 -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
+	ld --verbose -m32 -m elf_i386 -o $@ -T linker.ld $^ --oformat binary 
 
 %.o: %.c ${HEADERS}
 	gcc -fno-leading-underscore -std=c11 -m32 -ffreestanding -c $< -o $@ -march=i386 -g

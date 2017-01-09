@@ -104,7 +104,7 @@ struct KeyboardBuffer {
 	char ALT;
 };
 
-#define keyboard_base (0x100000)
+#define keyboard_base (shell_base + sizeof(struct ShellBuffer))
 void keyboard_handler(struct regs *r);
 void keyboard_install();
 // void keyboard_wait_outport();

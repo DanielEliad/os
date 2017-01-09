@@ -126,6 +126,13 @@ unsigned char kbdusysh[128] =
             memory_set(keys->buffer, 0x00, keys->i);
             keys->i = 0;
             break;
+        case '\t':
+            keys->buffer[keys->i++] = ' ';
+            keys->buffer[keys->i++] = ' ';
+            keys->buffer[keys->i++] = ' ';
+            keys->buffer[keys->i++] = ' ';
+            printch('\t');
+            break;
         default:
             keys->buffer[keys->i++] = key;
             printch(key);
