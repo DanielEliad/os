@@ -75,6 +75,9 @@ unsigned char kbdusysh[128] =
         case KRLEFT_CTRL:
             keys->CTRL = 1;
             return;
+        case KRCAPS_LOCK:
+            keys->SHIFT = ~keys->SHIFT;
+            return;
     }
     unsigned char key;
     if(keys->SHIFT) {
