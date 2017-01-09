@@ -773,7 +773,7 @@ void ls(char* path) {
         HD_RW(file.inode.i_block[0], HD_READ, 1, sect);
         de = (struct DIR_ENTRY *)sect;
 		for (i = 0; i < file.inode.i_size/sizeof(struct DIR_ENTRY); ++i) {
-			print(de[i].de_name);
+			printColor(de[i].de_name, BLUE_ON_BLACK);
 			printch('\t');
     	}
         printch('\n');
