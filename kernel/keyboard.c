@@ -37,25 +37,27 @@ KHOME, KUP, KPGUP,'-', KLEFT, '5', KRIGHT, '+', KEND, KDOWN, KPGDN, KINS, KDEL, 
         return;
     }
     struct KeyboardBuffer* keys = (struct KeyboardBuffer* )keyboard_base;
-    if(key == BACKSPACE) {
-        keys->buffer[keys->i--] = 0;
-        backspace();
-        return;
+
+    switch(key) {
+        case BACKSPACE:
+            if(keys->i == 0) {
+                break;
+            }
+            keys->buffer[keys->i--] = 0;
+            backspace();
+            break;
+        case ENTER:
+            keys->buffer[keys->i++] = 0;
+            printch(ENTER);
+            runCommand(keys->buffer);
+            memory_set(keys->buffer, 0x00, keys->i);
+            keys->i = 0;
+            break;
+        default:
+            keys->buffer[keys->i++] = key;
+            printch(key);
+            break;
     }
-    if(key == ENTER) {
-        // print("ENTER");
-        keys->buffer[keys->i++] = 0;
-        printch(ENTER);
-        runCommand(keys->buffer);
-        memory_set(keys->buffer, 0x00, keys->i);
-        keys->i = 0;
-        return;
-    }
-    
-    // char tmp[20]; itoa(keys->i, tmp); print(tmp); printch('\n');
-    keys->buffer[keys->i++] = key;
-    printch(key);
-    return;
 }
 
 void keyboard_install() {

@@ -141,6 +141,7 @@ char gettextcolor(unsigned char forecolor, unsigned char backcolor) {
 void backspace() {
 	unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
 	int offset = get_cursor();
+	if(get_col(offset) == 0) return;
 	offset -= 2;	// To delete the previous character
 	vidmem[offset] = ' ';
 	vidmem[offset + 1] = WHITE_ON_BLACK;

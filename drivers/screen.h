@@ -25,5 +25,6 @@ void printch(char ch);
 void clear_screen();
 int handle_scrolling(int cursor_offset);
 char gettextcolor(unsigned char forecolor, unsigned char backcolor);
+void backspace();
 
 #endif
