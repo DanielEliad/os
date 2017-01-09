@@ -89,6 +89,18 @@ int strcmp(char* s1, char* s2) { //returns 1 if they are not equal and 0 if they
     return 0;
 }
 
+int strcmpFrom(char* s1, char* s2, int index) {
+    if(strlen(s1) < index || strlen(s2) < index) {
+        return 1;
+    }
+
+    for(int i = 0; i < index; i++) {
+        if(s1[i] != s2[i]) return 1;
+    }
+
+    return 0;
+}
+
 int get_num_digits(int num) {
 	if(num == 0) return 1;
     int i = 0;
@@ -100,3 +112,19 @@ int get_num_digits(int num) {
 
 	return i;
 }
+
+
+int findFirst(char ch, char* s) {
+    return find(ch, s, 0);
+}
+
+int find(char ch, char* s, int start) {
+    int len = strlen(s);
+    for(int i = start; i < len; i++) {
+        if(s[i] == ch) return i;
+    }
+
+    return -1;
+}
+
+

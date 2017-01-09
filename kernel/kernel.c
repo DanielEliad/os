@@ -15,13 +15,14 @@ void main () {
 	irq_install();
 	__asm__ __volatile__ ("sti");
 	timer_install();
-	init_pages(1<<30);
+	init_pages(pages_size);
+	shell_install();
 	keyboard_install();
 	//timer_wait(5);
 	
-	// verify_DPT();
-	// verify_fs();
-	// verify_dir();
+	verify_DPT();
+	verify_fs();
+	verify_dir();
 	// char* a = malloc(300);
 	// char* str = "Hello World!";
 	// memory_copy(str, a, strlen(str) + 1);
