@@ -18,6 +18,16 @@ void print_char(char character, int col, int row, char attribute_byte) {
 	if(character == '\n') {
 		int rows = offset/(2*MAX_COLS);
 		offset = get_screen_offset(MAX_COLS -1, rows);
+	} else if(character == '\t') {
+		for(int i = 0; i < 3; i++) {
+			vidmem[offset] == ' ';
+			vidmem[offset + 1] == attribute_byte;
+			offset += 2;
+		}
+
+		vidmem[offset] == ' ';
+		vidmem[offset + 1] == attribute_byte;
+		
 	} else {
 		vidmem[offset] = character;
 		vidmem[offset + 1] = attribute_byte;
