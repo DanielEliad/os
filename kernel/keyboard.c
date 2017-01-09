@@ -36,12 +36,36 @@ KHOME, KUP, KPGUP,'-', KLEFT, '5', KRIGHT, '+', KEND, KDOWN, KPGDN, KINS, KDEL, 
         //KEY UP
         return;
     }
+    struct KeyboardBuffer* keys = (struct KeyboardBuffer* )keyboard_base;
+    if(key == BACKSPACE) {
+        keys->buffer[keys->i--] = 0;
+        backspace();
+        return;
+    }
+    if(key == ENTER) {
+        // print("ENTER");
+        keys->buffer[keys->i++] = 0;
+        printch(ENTER);
+        runCommand(keys->buffer);
+        memory_set(keys->buffer, 0x00, keys->i);
+        keys->i = 0;
+        return;
+    }
+    
+    // char tmp[20]; itoa(keys->i, tmp); print(tmp); printch('\n');
+    keys->buffer[keys->i++] = key;
     printch(key);
     return;
 }
 
 void keyboard_install() {
    
+    //Allocate the buffer
+    struct KeyboardBuffer* keys = (struct KeyboardBuffer* )keyboard_base;
+    keys->buffer = malloc(BufferLen);
+    keys->i = 0;
+    // char tmp[200]; itoa(keys->i, tmp); print(tmp); printch('\n');
+
     //Install the keyboard handler to IRQ1
     irq_install_handler(1, keyboard_handler);
 

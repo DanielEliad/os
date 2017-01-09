@@ -15,17 +15,18 @@ void main () {
 	irq_install();
 	__asm__ __volatile__ ("sti");
 	timer_install();
+	init_pages(1<<30);
 	keyboard_install();
 	//timer_wait(5);
-	init_pages(1<<30);
-	verify_DPT();
-	verify_fs();
-	verify_dir();
-	char* a = malloc(300);
-	char* str = "Hello World!";
-	memory_copy(str, a, strlen(str) + 1);
-	print(a);
-	free(a);
+	
+	// verify_DPT();
+	// verify_fs();
+	// verify_dir();
+	// char* a = malloc(300);
+	// char* str = "Hello World!";
+	// memory_copy(str, a, strlen(str) + 1);
+	// print(a);
+	// free(a);
 
 	// print("\n--------------------------------------------\n");
 	// struct INODE_NUM file = makeFile("worldFile", "/.");

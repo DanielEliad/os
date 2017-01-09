@@ -6,6 +6,8 @@
 #include "IO.h"
 #include "../drivers/screen.h"
 #include "utils.h"
+#include "shell.h"
+#include "../memory/header.h"
 #define KEYBOARD_DATA_REGISTER 0x60
 #define KEYBOARD_STATUS_REGISTER 0x64
 #define KEYBOARD_READ_CONFIGURATION 0x20
@@ -92,7 +94,14 @@ TAB, 'q', 'w',   'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',   '[', ']', ENTER, 0,
 KF1, KF2, KF3, KF4, KF5, KF6, KF7, KF8, KF9, KF10, 0, 0,
 KHOME, KUP, KPGUP,'-', KLEFT, '5', KRIGHT, '+', KEND, KDOWN, KPGDN, KINS, KDEL, 0, 0, 0, KF11, KF12 };
 
+#define BufferLen 512
 
+struct KeyboardBuffer {
+	char* buffer;
+	unsigned int i;
+};
+
+#define keyboard_base (0x100000)
 void keyboard_handler(struct regs *r);
 void keyboard_install();
 // void keyboard_wait_outport();
