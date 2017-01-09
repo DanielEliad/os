@@ -99,6 +99,9 @@ KHOME, KUP, KPGUP,'-', KLEFT, '5', KRIGHT, '+', KEND, KDOWN, KPGDN, KINS, KDEL, 
 struct KeyboardBuffer {
 	char* buffer;
 	unsigned int i;
+	char SHIFT;
+	char CTRL;
+	char ALT;
 };
 
 #define keyboard_base (0x100000)
