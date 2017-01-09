@@ -27,7 +27,7 @@ void print_char(char character, int col, int row, char attribute_byte) {
 
 		vidmem[offset] == ' ';
 		vidmem[offset + 1] == attribute_byte;
-		
+
 	} else {
 		vidmem[offset] = character;
 		vidmem[offset + 1] = attribute_byte;
@@ -142,8 +142,8 @@ void backspace() {
 	unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
 	int offset = get_cursor();
 	offset -= 2;	// To delete the previous character
-	vidmem[offset] = 0;
-	vidmem[offset + 1] = 0;
+	vidmem[offset] = ' ';
+	vidmem[offset + 1] = WHITE_ON_BLACK;
 	set_cursor(offset);
 
 
