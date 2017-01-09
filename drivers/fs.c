@@ -756,32 +756,30 @@ char* readFromFile(char* fileName) {
 }
 
 
+unsigned int getFileType(unsigned int inode_num) {
 
-void ls(char* path) {
-	struct INODE_NUM file = findFile(path);
+	if(inode_num == -1) {	// Special case - the ".." dir from the "/" root dir
+		return FT_DIR;
+	}
 
-	unsigned int i = 0;
-    char sect[512] = {0};
-    struct DIR_ENTRY *de;
+	extern unsigned int* hd0;
 
-    printch('\n');
-    switch (file.inode.i_mode) {
-    case FT_NML:
-        print(path); print(" - File"); printch('\n');
-        break;
-    case FT_DIR:
-        HD_RW(file.inode.i_block[0], HD_READ, 1, sect);
-        de = (struct DIR_ENTRY *)sect;
-		for (i = 0; i < file.inode.i_size/sizeof(struct DIR_ENTRY); ++i) {
-			printColor(de[i].de_name, BLUE_ON_BLACK);
-			printch('\t');
-    	}
-        printch('\n');
-        break;
-    default:
-        print("UNKNOWN FILE TYPE!!\n");
-        for(;;); // halt();
-    }
+	unsigned int *q = hd0;
+
+	unsigned int sb_start = q[0];
+
+	struct SUPER_BLOCK sb;
+
+	loadSB(&sb, sb_start);
+
+
+
+	struct INODE inode;
+	iget(&sb, &inode, inode_num);
+	return inode.i_mode;
 }
+
+
+
 
 

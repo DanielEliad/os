@@ -23,6 +23,7 @@ void main () {
 	verify_DPT();
 	verify_fs();
 	verify_dir();
+	// deleteFile("/worldFile");
 	// char* a = malloc(300);
 	// char* str = "Hello World!";
 	// memory_copy(str, a, strlen(str) + 1);

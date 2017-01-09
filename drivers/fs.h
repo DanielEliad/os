@@ -112,7 +112,6 @@ void writeToFile(char* fileName, char* data, unsigned int len);
 char* readFromFile(char* fileName);
 
 
-void ls(char* path);
-
+unsigned int getFileType(unsigned int inode_num);
 
 #endif

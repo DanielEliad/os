@@ -16,4 +16,8 @@ void shell_install();
 
 void runCommand(char* command);
 
+// Commands
+void ls(char* path);
+
+
 #endif
