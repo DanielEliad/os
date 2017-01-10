@@ -9,7 +9,8 @@
 
 #define MAX_DIR_LEN 215
 struct ShellBuffer {
-	char* currentDir;
+	char* currentDir;	// Make sure I have a trailing slash always :)
+	char len;			// Make sure to increment me to always equal the len of currentDir :)
 };
 
 void shell_install();

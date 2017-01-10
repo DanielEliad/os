@@ -483,6 +483,8 @@ struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY
 			print("PART OF THE FILE NAME THAT FITS: ");
 			print(fileName);
 			print("\n");
+			struct INODE_NUM dummy = {{0,0,{0,}}, -1};
+			return dummy;
 			for(;;); // halt();
 		}
 
@@ -515,14 +517,14 @@ struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY
 
 		}
 	}
-	print("\nCould not find the file specified. returning dummy\n");
-	struct INODE_NUM dummy = {0, -1};
+	// print("\nCould not find the file specified. returning dummy\n");
+	struct INODE_NUM dummy = {{0,0,{0,}}, -1};
 	return dummy;
 
 }
 
 
-struct INODE_NUM makeGenericFile(char* fileName, char* pathToDir, unsigned int i_mode) {
+struct INODE_NUM makeFile(char* fileName, char* pathToDir) {
 	struct INODE_NUM dir = findFile(pathToDir);
 	// stat(dir.inode);
 
@@ -546,7 +548,7 @@ struct INODE_NUM makeGenericFile(char* fileName, char* pathToDir, unsigned int i
 	unsigned int i = dir.inode.i_size/sizeof(struct DIR_ENTRY) - 1;
 	strcopy(fileName, de[i].de_name);
 
-	struct INODE file = {i_mode, 0, {0,}};
+	struct INODE file = {FT_NML, 0, {0,}};
 	unsigned int inode_num = alloc_inode(&sb);
 	file.i_block[0] = alloc_blk(&sb);
 	iput(&sb, &file, inode_num);
@@ -558,17 +560,51 @@ struct INODE_NUM makeGenericFile(char* fileName, char* pathToDir, unsigned int i
 }
 
 
-struct INODE_NUM makeFile(char* fileName, char* pathToDir) {
-	return makeGenericFile(fileName, pathToDir, FT_NML);
-}
-
-
-
-
-
 
 struct INODE_NUM makeFolder(char* folderName, char* pathToDir) {
-	return makeGenericFile(folderName, pathToDir, FT_DIR);
+	struct INODE_NUM dir = findFile(pathToDir);
+	// stat(dir.inode);
+
+	extern unsigned int* hd0;
+
+	unsigned int *q = hd0;
+
+	unsigned int sb_start = q[0];
+
+	struct SUPER_BLOCK sb;
+
+	loadSB(&sb, sb_start);
+
+	char s[512];
+	HD_RW(dir.inode.i_block[0], HD_READ, 1, s);
+	// struct DIR_ENTRY* de = loadDE(dir, s);	// Check out why this is causing override of code segment;
+	
+	struct DIR_ENTRY* de = (struct DIR_ENTRY *) s;
+	
+	dir.inode.i_size += sizeof(struct DIR_ENTRY);
+	unsigned int i = dir.inode.i_size/sizeof(struct DIR_ENTRY) - 1;
+	strcopy(folderName, de[i].de_name);
+
+	struct INODE folder = {FT_DIR, 2*sizeof(struct DIR_ENTRY), {0,}};
+	unsigned int inode_num = alloc_inode(&sb);
+	folder.i_block[0] = alloc_blk(&sb);
+	iput(&sb, &folder, inode_num);
+	de[i].de_inode = inode_num;
+	HD_RW(dir.inode.i_block[0], HD_WRITE, 1, de);
+
+	// Create 2 directory entries: "." & ".."
+	memory_set(s, 0x00, 512);
+	de = (struct DIR_ENTRY *) s;
+	strcopy(".", de->de_name);
+    de->de_inode = inode_num;
+    ++de;
+    strcopy("..", de->de_name);
+    de->de_inode = dir.inode_num;
+    HD_RW(folder.i_block[0], HD_WRITE, 1, s);
+
+	iput(&sb, &dir.inode, dir.inode_num);
+	struct INODE_NUM result = {folder, inode_num};
+	return result;
 }
 
 

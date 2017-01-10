@@ -120,7 +120,7 @@ int findFirst(char ch, char* s) {
 
 int find(char ch, char* s, int start) {
     int len = strlen(s);
-    for(int i = start; i < len; i++) {
+    for(int i = start + 1; i < len; i++) {
         if(s[i] == ch) return i;
     }
 

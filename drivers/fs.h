@@ -91,10 +91,6 @@ struct DIR_ENTRY* loadDE(struct INODE* inode, char* sectBuffer);
 struct INODE_NUM findFile(char* path);
 struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY* currentDE, 
 	struct INODE currentDirINODE);
-
-
-struct INODE_NUM makeGenericFile(char* fileName, char* pathToDir, unsigned int i_mode);
-
 struct INODE_NUM makeFile(char* fileName, char* pathToDir);
 struct INODE_NUM makeFolder(char* folderName, char* pathToDir);
 
