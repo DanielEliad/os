@@ -8,3 +8,10 @@ Check what's up with weird error messages from IDT # CHECK (mixed up order of po
 
 void WriteToFile(char* fileName); # CHECK
 void ReadFromFile(char* fileName, char* buffer, unsigned int len); # CHECK
+
+struct INDEXES {
+	int from;
+	int to;
+};
+
+struct INDEXES getNextArg(int from);
