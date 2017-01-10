@@ -25,63 +25,65 @@ void runCommand(char* command) {
 	}
 
 	if(strcmpFrom(command, "ls", index) == 0) {
-		int oldIndex = index;
-		int newIndex = find(' ', command, oldIndex);
-		char multipleFiles = 0;
-		while(newIndex != -1) {
-			multipleFiles = 1;
-
-			// newIndex - 1: skip the space
-			// oldIndex + 1: skip the space
-			// +1: to make it length and not index from oldIndex
-			int len = (newIndex - 1) - (oldIndex + 1) + 1;
-			if(command[oldIndex + 1] == '/') {
-				char tmp[len];
-				memory_copy(command + oldIndex + 1, tmp, len);
-				printch('\n'); print(tmp); print(":");
-				ls(tmp);
-			} else {
-				char tmp[len + shellBuffer->len];
-				memory_copy(shellBuffer->currentDir, tmp, shellBuffer->len);
-				// -1 for the command: skip the space
-				memory_copy(command + oldIndex + 1, tmp + shellBuffer->len, len);
-				printch('\n'); print(tmp); print(":");
-				ls(tmp);
-			}
-			// char indexBuffer[20];
-			// itoa(newIndex, indexBuffer); print('\n------------'); print(indexBuffer); printch('------------\n');
-			// itoa(oldIndex, indexBuffer); print('\n------------'); print(indexBuffer); printch('------------\n');
-			oldIndex = newIndex;
-			newIndex = find(' ', command, oldIndex);
-		}
-
-		int len = strlen(command) - oldIndex;
-		if(command[oldIndex + 1] == '/') {
-			char tmp[len + 1];
-			memory_copy(command + oldIndex + 1, tmp, len);
-			
-			if(multipleFiles) {
-				printch('\n'); print(tmp); print(":");
-			}
-
-			ls(tmp);
-		} else {
-			char tmp[len + 1 + shellBuffer->len];
-			memory_copy(shellBuffer->currentDir, tmp, shellBuffer->len);
-			// +1 for the command: skip the space
-			memory_copy(command + oldIndex + 1, tmp + shellBuffer->len, len);
-			if(multipleFiles) {
-				printch('\n'); print(tmp); print(":");
-			}
-			ls(tmp);			
-		}
+		handle_ls(command, index);
 	}
 
 	// print(command);
 	// printch('\n');
 }
 
+void handle_ls(char* command, int index) {
+	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
 
+	int oldIndex = index;
+	int newIndex = find(' ', command, oldIndex);
+	char multipleFiles = 0;
+	while(newIndex != -1) {
+		multipleFiles = 1;
+
+		// newIndex - 1: skip the space
+		// oldIndex + 1: skip the space
+		// +1: to make it length and not index from oldIndex
+		int len = (newIndex - 1) - (oldIndex + 1) + 1;
+		if(command[oldIndex + 1] == '/') {
+			char tmp[len];
+			memory_copy(command + oldIndex + 1, tmp, len);
+			printch('\n'); print(tmp); print(":");
+			ls(tmp);
+		} else {
+			char tmp[len + shellBuffer->len];
+			memory_copy(shellBuffer->currentDir, tmp, shellBuffer->len);
+			
+			// +1 for the command: skip the space
+			memory_copy(command + oldIndex + 1, tmp + shellBuffer->len, len);
+			printch('\n'); print(tmp); print(":");
+			ls(tmp);
+		}
+		oldIndex = newIndex;
+		newIndex = find(' ', command, oldIndex);
+	}
+
+	int len = strlen(command) - oldIndex;
+	if(command[oldIndex + 1] == '/') {
+		char tmp[len + 1];
+		memory_copy(command + oldIndex + 1, tmp, len);
+		
+		if(multipleFiles) {
+			printch('\n'); print(tmp); print(":");
+		}
+
+		ls(tmp);
+	} else {
+		char tmp[len + 1 + shellBuffer->len];
+		memory_copy(shellBuffer->currentDir, tmp, shellBuffer->len);
+		// +1 for the command: skip the space
+		memory_copy(command + oldIndex + 1, tmp + shellBuffer->len, len);
+		if(multipleFiles) {
+			printch('\n'); print(tmp); print(":");
+		}
+		ls(tmp);			
+	}
+}
 
 void ls(char* path) {
 	print(path);

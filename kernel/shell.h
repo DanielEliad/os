@@ -17,6 +17,9 @@ void shell_install();
 
 void runCommand(char* command);
 
+// Handlers to Commands
+void handle_ls(char* command, int index);
+
 // Commands
 void ls(char* path);
 
