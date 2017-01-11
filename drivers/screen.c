@@ -211,5 +211,6 @@ void shiftWindow(int delta) {
 
 
 char isBottomOfScreen() {
-	return get_row(get_cursor()) == MAX_ROWS;
+	int row = get_row(get_cursor());
+	return get_row(get_cursor()) == MAX_ROWS - 1;
 }

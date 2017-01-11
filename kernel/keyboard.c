@@ -144,7 +144,9 @@ unsigned char kbdusysh[128] =
         case KDOWN:
             if(keys->CTRL) {
                 // Scroll down
-                if(!isBottomOfScreen()) shiftAndUpdateAll(MAX_COLS*2);
+                if(!isBottomOfScreen()) {
+                    shiftAndUpdateAll(MAX_COLS*2);
+                }
             } else {
                 // Repeat last command down
             }
