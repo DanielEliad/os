@@ -76,14 +76,15 @@ char* malloc(unsigned int n_bytes) {
 		print("CATEGORY NOT FOUND\n");
 		return 0;
 	}
-	Block correct_block = blocks[block];
-	for (int i = 0; i < correct_block.len; ++i)	{
-		Header h = correct_block.headers[i];
-		if(h.used == 0) {	//if h is not being used at the moment
-			h.used = 1;	//mark as used
+	Block* correct_block = &blocks[block];
+	for (int i = 0; i < correct_block->len; ++i)	{
+		Header* h = &correct_block->headers[i];
+		if(h->used == 0) {	//if h is not being used at the moment
+			h->used = 1;	//mark as used
+			memory_set(h->addr, 0x00, h->data_size);
 			// print("\nALLOCATED HEADER WITH ADDR: ");
-			// char tmp[20]; itoa(h.addr, tmp); print(tmp); print("\n");
-			return h.addr;	//return the space allocated for your use.
+			// char tmp[20]; itoa(h->addr, tmp); print(tmp); print("\n");
+			return h->addr;	//return the space allocated for your use.
 		}
 	}
 
@@ -94,13 +95,13 @@ char* malloc(unsigned int n_bytes) {
 void free(unsigned int addr) {
 	Block* blocks = (Block* ) base;
 	for(unsigned int i = 0; i < len_curve; i++) {
-		Block tested_block = blocks[i];
-		for(unsigned int j = 0; j < tested_block.len; j++) {
-			Header h = tested_block.headers[j];
-			if(h.addr == addr) {
-				h.used = 0;
+		Block* tested_block = &blocks[i];
+		for(unsigned int j = 0; j < tested_block->len; j++) {
+			Header* h = &tested_block->headers[j];
+			if(h->addr == addr) {
+				h->used = 0;
 				// print("\nCLEARED HEADER WITH ADDR: ");
-				// char tmp[20]; itoa(h.addr, tmp); print(tmp); print("\n");
+				// char tmp[20]; itoa(h->addr, tmp); print(tmp); print("\n");
 				return;
 			}
 		}

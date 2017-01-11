@@ -14,4 +14,6 @@ int get_num_digits(int num);
 int findFirst(char ch, char* s);
 int find(char ch, char* s, int start);
 
+char* concat(char* s1, char* s2);
+
 #endif

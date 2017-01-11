@@ -128,3 +128,13 @@ int find(char ch, char* s, int start) {
 }
 
 
+
+
+char* concat(char* s1, char* s2) {
+    int len_s1 = strlen(s1), len_s2 = strlen(s2);
+    char* s = malloc(len_s1 + len_s2 + 1);  // +1 for the null terminator
+    memory_copy(s1, s, len_s1);
+    memory_copy(s2, s + len_s1, len_s2);
+    return s;
+}
+
