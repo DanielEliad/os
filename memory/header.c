@@ -30,11 +30,11 @@ void init_pages(unsigned int size) {
 	};
 
 	int amounts = 0;
-	float smallest_data_size = 1 << (5); // 2^5
+	// float smallest_data_size = 1 << (5); // 2^5
 	for (int i = 0; i < len_curve; i++) {
 		float data_size = 1 << (i+5); // 2^(i+5)
-		float frames = (size/smallest_data_size);
-		int amount = (curve[i]*frames)/data_size;
+		// float frames = (size/smallest_data_size);
+		int amount = (curve[i]*size)/data_size;
 		amounts += amount;
 	}
 	unsigned int data_addr = base + len_curve*(sizeof(Block)) + amounts*(sizeof(Header));
@@ -42,8 +42,8 @@ void init_pages(unsigned int size) {
 	unsigned int block_addr = base;
 	for (int i = 0; i < len_curve; ++i) {	//for each block
 		float data_size = 1 << (i+5); // 2^(i+5)
-		float frames = (size/smallest_data_size); //(size/data_size);
-		int amount = (curve[i]*frames)/data_size;
+		// float frames = (size/smallest_data_size); //(size/data_size);
+		int amount = (curve[i]*size)/data_size;
 		unsigned int first_header_of_block_addr = header_addr;
 		for (int j = 0; j < amount; ++j) {
 			Header pageStart;
@@ -58,11 +58,11 @@ void init_pages(unsigned int size) {
 		Block b;
 		b.headers = (Header*)first_header_of_block_addr;
 		b.len = amount;
-		// print("Set len of block to: ");
-		// char str[200];
-		// itoa(amount, str);
-		// print(str);
-		// print("\n");
+		print("Set len of block to: ");
+		char str[200];
+		itoa(amount, str);
+		print(str);
+		print("\n");
 		write_block(b, block_addr);
 		block_addr += sizeof(Block);
 	}

@@ -1,7 +1,16 @@
 #include "screen.h"
 
+void screen_install() {
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	screenBuffer->screenMemory = malloc(screenMemoryBufferSize);
+	screenBuffer->startOfWindow = 0;
+
+}
+
 void print_char(char character, int col, int row, char attribute_byte) {
-	unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
+	// unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	unsigned char *vidmem = (unsigned char *) (screenBuffer->screenMemory + screenBuffer->startOfWindow);
 
 	if(!attribute_byte) {
 		attribute_byte = WHITE_ON_BLACK;
@@ -18,7 +27,7 @@ void print_char(char character, int col, int row, char attribute_byte) {
 	if(character == '\n') {
 		int rows = offset/(2*MAX_COLS);
 		offset = get_screen_offset(MAX_COLS -1, rows);
-	} else if(character == '\t') {
+	} else if(character == '\t') {	// Replace tab with 4 spaces
 		for(int i = 0; i < 3; i++) {
 			vidmem[offset] == ' ';
 			vidmem[offset + 1] == attribute_byte;
@@ -77,6 +86,9 @@ void print_at(const char* message, int col, int row, char color) {
 		offset = get_cursor();
 		print_char(message[i++], get_col(offset), get_row(offset), color);
 	}
+
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	update(offset - i*2, screenBuffer->startOfWindow + offset - i*2, i + 1);
 }
 
 int get_col(int offset) {
@@ -100,7 +112,10 @@ void printColor(const char* message, char color) {
 
 void printch(char ch) {
 	int offset = get_cursor();
-	print_char(ch, get_col(offset), get_row(offset), WHITE_ON_BLACK);	
+	print_char(ch, get_col(offset), get_row(offset), WHITE_ON_BLACK);
+
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	update(offset, screenBuffer->startOfWindow + offset, 1);
 }
 
 void clear_screen() {
@@ -109,18 +124,23 @@ void clear_screen() {
 			print_char(' ', col, row, WHITE_ON_BLACK);
 		}
 	}
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	shiftWindow(SCREENSIZE*2);
 
 	set_cursor(get_screen_offset(0,0));
 }
 
 
 int handle_scrolling(int cursor_offset) {
-	if(cursor_offset < MAX_ROWS*MAX_COLS*2) {
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+
+	if(cursor_offset < SCREENSIZE) {
 		return cursor_offset;
 	}
 
+	char* bufferWindow = screenBuffer->screenMemory + screenBuffer->startOfWindow;
 	for(int i = 1; i < MAX_ROWS; ++i) {
-		memory_copy((char *) get_screen_offset(0, i) + VIDEO_ADDRESS,
+		memory_copy((char *) (int)get_screen_offset(0, i) +(int) bufferWindow,
 					(char *) get_screen_offset(0, i-1) + VIDEO_ADDRESS,
 					MAX_COLS*2);
 	}
@@ -129,6 +149,10 @@ int handle_scrolling(int cursor_offset) {
 	for(int i = 0; i < MAX_COLS*2; ++i) {
 		last_line[i] = 0;
 	}
+
+
+	shiftWindow(2*MAX_COLS);
+
 
 	cursor_offset -= 2*MAX_COLS;
 	return cursor_offset;
@@ -144,15 +168,43 @@ char gettextcolor(unsigned char forecolor, unsigned char backcolor) {
 }
 
 void backspace() {
-	unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
+	// unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS;
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	unsigned char *vidmem = (unsigned char *) (screenBuffer->screenMemory + screenBuffer->startOfWindow);
 	int offset = get_cursor();
 	if(get_col(offset) == 0) return;
 	offset -= 2;	// To delete the previous character
 	vidmem[offset] = ' ';
 	vidmem[offset + 1] = WHITE_ON_BLACK;
 	set_cursor(offset);
+	update(offset, screenBuffer->startOfWindow + offset, 2);
+}
 
+void updateAll(int newWindowDelta) {
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	shiftWindow(newWindowDelta);
+	update(0, screenBuffer->startOfWindow, SCREENSIZE/2);
+}
 
+void update(int screen_pos, int buffer_pos, int n_characters) {
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	unsigned char *vidmem = (unsigned char *) screenBuffer->screenMemory;
+
+	int n_bytes = n_characters*2;
+	memory_copy(vidmem + buffer_pos, VIDEO_ADDRESS + screen_pos, n_bytes);
 }
 
 
+void shiftWindow(int delta) {
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	if(screenBuffer->screenMemory + delta - SCREENSIZE < 0) {
+		memory_copy
+				(
+					screenBuffer->screenMemory + SCREENSIZE,
+					screenBuffer->screenMemory,
+					screenBuffer->startOfWindow + SCREENSIZE
+				);
+	} else {
+		screenBuffer->screenMemory += delta;
+	}
+}

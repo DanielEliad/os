@@ -517,7 +517,7 @@ struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY
 
 		}
 	}
-	// print("\nCould not find the file specified. returning dummy\n");
+	print("\nCould not find the file specified. returning dummy\n");
 	struct INODE_NUM dummy = {{0,0,{0,}}, -1};
 	return dummy;
 

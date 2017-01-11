@@ -4,8 +4,9 @@
 #include "utils.h"
 #include "../drivers/fs.h"
 #include "../memory/header.h"
+#include "../drivers/screen.h"
 
-#define shell_base (0x100000)
+#define shell_base (screen_base + sizeof(struct ScreenBuffer))
 
 #define MAX_DIR_LEN 215
 #define MAX_PARAM_LEN 10

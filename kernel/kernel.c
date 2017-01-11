@@ -9,20 +9,24 @@
 #include "../drivers/fs.h"
 
 void main () {
+	init_pages(pages_size);
+	screen_install();
 	clear_screen();
+	
+
 	idt_install();
 	isrs_install();
 	irq_install();
 	__asm__ __volatile__ ("sti");
 	timer_install();
-	init_pages(pages_size);
-	shell_install();
-	keyboard_install();
+	
 	//timer_wait(5);
 	
 	verify_DPT();
 	verify_fs();
 	verify_dir();
+	shell_install();
+	keyboard_install();
 	// deleteFile("/worldFile");
 	// char* a = malloc(300);
 	// char* str = "Hello World!";
@@ -31,14 +35,14 @@ void main () {
 	// free(a);
 
 	// print("\n--------------------------------------------\n");
-	// struct INODE_NUM file = makeFile("worldFile", "/.");
+	// struct INODE_NUM file = makeFile("worldFile", "/");
 	// struct INODE_NUM folder = makeFolder("worldDir", "/.");
 	// struct INODE_NUM nestedFile = makeFile("nested", "/worldDir");
 	// struct INODE_NUM nestedFile2 = makeFile("nested2", "/worldDir");
 	// struct INODE_NUM worldDir = findFile("/worldDir");
 	// stat(&worldDir.inode);
 	
-	// deleteFile("/worldDir");
+	// deleteFile("/worldFile");
 	// struct INODE_NUM root = findFile("/worldDir");
 	// stat(&root.inode);
 	// struct INODE_NUM worldDir = findFile("/worldDir/nested");
