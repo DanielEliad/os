@@ -133,6 +133,22 @@ unsigned char kbdusysh[128] =
             keys->buffer[keys->i++] = ' ';
             printch('\t');
             break;
+        case KUP:
+            if(keys->CTRL) {
+                // Scroll up
+                shiftAndUpdateAll(-MAX_COLS*2);
+            } else {
+                // Repeat last command up
+            }
+            break;
+        case KDOWN:
+            if(keys->CTRL) {
+                // Scroll down
+                if(!isBottomOfScreen()) shiftAndUpdateAll(MAX_COLS*2);
+            } else {
+                // Repeat last command down
+            }
+            break;
         default:
             keys->buffer[keys->i++] = key;
             printch(key);

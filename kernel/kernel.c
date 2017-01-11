@@ -27,6 +27,7 @@ void main () {
 	verify_dir();
 	shell_install();
 	keyboard_install();
+	clear_screen();
 	// deleteFile("/worldFile");
 	// char* a = malloc(300);
 	// char* str = "Hello World!";

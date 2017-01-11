@@ -119,14 +119,13 @@ void printch(char ch) {
 }
 
 void clear_screen() {
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	shiftWindow(SCREENSIZE);
 	for(int row = 0; row < MAX_ROWS; ++row) {
 		for(int col = 0; col < MAX_COLS; ++col) {
 			print_char(' ', col, row, WHITE_ON_BLACK);
 		}
 	}
-	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
-	shiftWindow(SCREENSIZE*2);
-
 	set_cursor(get_screen_offset(0,0));
 }
 
@@ -180,7 +179,7 @@ void backspace() {
 	update(offset, screenBuffer->startOfWindow + offset, 2);
 }
 
-void updateAll(int newWindowDelta) {
+void shiftAndUpdateAll(int newWindowDelta) {
 	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
 	shiftWindow(newWindowDelta);
 	update(0, screenBuffer->startOfWindow, SCREENSIZE/2);
@@ -205,6 +204,12 @@ void shiftWindow(int delta) {
 					screenBuffer->startOfWindow + SCREENSIZE
 				);
 	} else {
-		screenBuffer->screenMemory += delta;
+		screenBuffer->startOfWindow += delta;
 	}
+}
+
+
+
+char isBottomOfScreen() {
+	return get_row(get_cursor()) == MAX_ROWS;
 }
