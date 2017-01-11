@@ -4,6 +4,7 @@ void screen_install() {
 	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
 	screenBuffer->screenMemory = malloc(screenMemoryBufferSize);
 	screenBuffer->startOfWindow = 0;
+	screenBuffer->lastRowWritten = 0;
 
 }
 
@@ -45,6 +46,7 @@ void print_char(char character, int col, int row, char attribute_byte) {
 	offset += 2;
 	offset = handle_scrolling(offset);
 	set_cursor(offset);
+	screenBuffer->lastRowWritten = get_row(offset);
 }
 
 int get_screen_offset(int col, int row) {
@@ -211,6 +213,8 @@ void shiftWindow(int delta) {
 
 
 char isBottomOfScreen() {
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+
 	int row = get_row(get_cursor());
-	return get_row(get_cursor()) == MAX_ROWS - 1;
+	return get_row(get_cursor()) == screenBuffer->lastRowWritten;
 }

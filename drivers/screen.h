@@ -33,6 +33,7 @@
 struct ScreenBuffer {
 	char* screenMemory;
 	int startOfWindow;
+	int lastRowWritten;
 };
 
 
