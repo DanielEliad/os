@@ -52,9 +52,9 @@ int handle_scrolling(int cursor_offset);
 char gettextcolor(unsigned char forecolor, unsigned char backcolor);
 void backspace();
 
-void updateAll(int newWindowDelta);
+void shiftAndUpdateAll(int newWindowDelta);
 void update(int screen_pos, int buffer_pos, int n_characters);
 void shiftWindow(int delta);
-
+char isBottomOfScreen();
 
 #endif

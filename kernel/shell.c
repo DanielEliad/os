@@ -91,13 +91,13 @@ void handle_ls(struct Args args) {
 
 		if(args.argv[i][0] == '/') {
 			if(multipleFiles) {
-				printch('\n'); print(args.argv[i]); print(":");
+				printch('\n'); print(args.argv[i]); print(":\n");
 			}
 			ls(args.argv[i]);
 		} else {
 			char* completePath = concat(shellBuffer->currentDir, args.argv[i]);
 			if(multipleFiles) {
-				printch('\n'); print(completePath); print(":");
+				printch('\n'); print(completePath); print(":\n");
 			}
 			ls(completePath);
 			free(completePath);
