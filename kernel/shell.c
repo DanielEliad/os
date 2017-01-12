@@ -58,6 +58,8 @@ void runCommand(char* command) {
 		handle_cd(args);
 	} else if(strcmp(args.argv[0], "rm") == 0) {
 		handle_rm(args);
+	} else if(strcmp(args.argv[0], "touch") == 0) {
+		handle_touch(args);
 	}
 
 
@@ -154,6 +156,20 @@ void handle_rm(struct Args args) {
 			} else {
 				rm(completePath);
 			}
+			free(completePath);
+		}
+	}
+}
+
+void handle_touch(struct Args args) {
+	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
+	
+	for(int i = 1; i < args.argc; i++) {
+		if(args.argv[i][0] == '/') {
+			touch(args.argv[i]);
+		} else {
+			char* completePath = concat(shellBuffer->currentDir, args.argv[i]);
+			touch(completePath);
 			free(completePath);
 		}
 	}
@@ -290,10 +306,14 @@ void rmdir(char* path) {
         printColor("UNKNOWN FILE TYPE!!\n", RED_ON_BLACK);
         for(;;); // halt();
     }
+}
 
-	// print("Here");
- //    for(;;);
-
-
+void touch(char* path) {
+	char* simplifiedPath = simplify(path);
+	struct FOLDER f = getNameOfContainingFolder(simplifiedPath);
+	makeFile(f.dirName, f.pathToDir);
+	free(simplifiedPath);
+	free(f.pathToDir);
+	free(f.dirName);
 }
 

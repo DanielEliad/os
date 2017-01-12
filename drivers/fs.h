@@ -112,4 +112,10 @@ unsigned int getFileType(unsigned int inode_num);
 
 char* simplify(char* path);
 
+struct FOLDER {
+        char* pathToDir;
+        char* dirName;
+};
+struct FOLDER getNameOfContainingFolder(char* path);
+
 #endif

@@ -868,7 +868,29 @@ char* simplify(char* path) {
 			tmp[j++] = path[i];
 		}
 	}
-	printColor(tmp, RED_ON_BLACK);
+
 	return tmp;
+}
+
+
+struct FOLDER getNameOfContainingFolder(char* path) {
+	
+	struct FOLDER f;
+
+	int len = strlen(path);
+	char* pathToDir = malloc(len);
+	char* dirName = malloc(len);
+	strcopy(path, pathToDir);
+	for(int i = len - 1; i >= 0; i--) {
+		if(pathToDir[i] == '/') {
+			pathToDir[i + 1] = 0;
+			strcopy(path + i + 1, dirName);
+			break;
+		}
+	}
+
+	f.pathToDir = pathToDir;
+	f.dirName = dirName;
+	return f;
 }
 
