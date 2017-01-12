@@ -3,6 +3,10 @@
 void screen_install() {
 	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
 	screenBuffer->screenMemory = malloc(screenMemoryBufferSize);
+	for(int offset = 0; offset < screenMemoryBufferSize; offset += 2) {
+		screenBuffer->screenMemory[offset] == ' ';
+		screenBuffer->screenMemory[offset + 1] == WHITE_ON_BLACK;
+	}
 	screenBuffer->startOfWindow = 0;
 	screenBuffer->lastRowWritten = 0;
 
@@ -139,22 +143,13 @@ int handle_scrolling(int cursor_offset) {
 		return cursor_offset;
 	}
 
-	char* bufferWindow = screenBuffer->screenMemory + screenBuffer->startOfWindow;
-	for(int i = 1; i < MAX_ROWS; ++i) {
-		memory_copy((char *) (int)get_screen_offset(0, i) +(int) bufferWindow,
-					(char *) get_screen_offset(0, i-1) + VIDEO_ADDRESS,
-					MAX_COLS*2);
+	char* last_line = (char *) (get_screen_offset(0, MAX_ROWS) + screenBuffer->screenMemory + screenBuffer->startOfWindow);
+	for(int i = 0; i < MAX_COLS*2; i += 2) {
+		last_line[i] = ' ';
+		last_line[i + 1] = WHITE_ON_BLACK;
 	}
 
-	char* last_line = (char *) get_screen_offset(0, MAX_ROWS-1) + VIDEO_ADDRESS;
-	for(int i = 0; i < MAX_COLS*2; ++i) {
-		last_line[i] = 0;
-	}
-
-
-	shiftWindow(2*MAX_COLS);
-
-
+	shiftAndUpdateAll(2*MAX_COLS);
 	cursor_offset -= 2*MAX_COLS;
 	return cursor_offset;
 }
@@ -201,13 +196,15 @@ void shiftWindow(int delta) {
 	if(screenBuffer->startOfWindow + delta - screenMemoryBufferSize < 0) {
 		memory_copy
 				(
-					screenBuffer->screenMemory + SCREENSIZE,
+					screenBuffer->screenMemory + delta,
 					screenBuffer->screenMemory,
-					screenBuffer->startOfWindow + SCREENSIZE
-				);
-	} else {
-		screenBuffer->startOfWindow += delta;
+					screenBuffer->startOfWindow
+				);	// Maybe +/- delta on n_bytes
+
 	}
+
+	screenBuffer->startOfWindow += delta;
+	set_cursor(get_cursor() - delta);
 }
 
 

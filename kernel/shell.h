@@ -11,7 +11,7 @@
 #define MAX_DIR_LEN 215
 #define MAX_PARAM_LEN 10
 struct ShellBuffer {
-	char* currentDir;	// Make sure I have a trailing slash always :)
+	char* currentDir;
 	char len;			// Make sure to increment me to always equal the len of currentDir :)
 };
 
@@ -28,6 +28,7 @@ struct Args getArgs(char* command);
 void shell_install();
 
 void runCommand(char* command);
+void printCurrentDir();
 
 // Handlers to Commands
 void handle_ls(struct Args args);

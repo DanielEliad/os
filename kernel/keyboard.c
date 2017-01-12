@@ -122,9 +122,10 @@ unsigned char kbdusysh[128] =
         case ENTER:
             keys->buffer[keys->i++] = 0;
             printch(ENTER);
-            runCommand(keys->buffer);
+            runCommand(keys->buffer);   //runCommand can't be blocking
             memory_set(keys->buffer, 0x00, keys->i);
             keys->i = 0;
+            printCurrentDir();
             break;
         case '\t':
             keys->buffer[keys->i++] = ' ';

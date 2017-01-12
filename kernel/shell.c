@@ -68,6 +68,8 @@ void runCommand(char* command) {
 	// print(args.argv[0]); printch('\n');
 	if(strcmp(args.argv[0], "ls") == 0) {
 		handle_ls(args);
+	} else if(strcmp(args.argv[0], "cd") == 0) {
+		handle_cd(args);
 	}
 
 
@@ -75,6 +77,11 @@ void runCommand(char* command) {
 	
 }
 
+
+void printCurrentDir() {
+	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
+	printColor(shellBuffer->currentDir, GREEN_ON_BLACK); printColor(" ", GREEN_ON_BLACK);
+}
 
 
 
@@ -105,11 +112,34 @@ void handle_ls(struct Args args) {
 	}
 }
 
+void handle_cd(struct Args args) {
+	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
+	if(args.argc > 2) {
+		printColor("Too many arguments. Usage:\n\tcd <dir>\n", RED_ON_BLACK);
+		return;
+	}
+
+
+	if(args.argc == 1) {	// cd into the root directory
+		cd("/");
+		return;
+	}
+
+	if(args.argv[1][0] == '/') {
+		cd(args.argv[1]);
+		return;
+	}
+
+	char* completePath = concat(shellBuffer->currentDir, args.argv[1]);
+	cd(completePath);
+	free(completePath);
+}
+
 void ls(char* path) {
 	struct INODE_NUM file = findFile(path);
 
 	if(file.inode_num == -1) {	// Illegal file or file not found
-		print("\nIllegal file or file not found\n");
+		print("Illegal file or file not found\n");
 		return;
 	}
 
@@ -121,7 +151,7 @@ void ls(char* path) {
     switch (file.inode.i_mode) {
     case FT_NML:
     	if(path[strlen(path) - 1] == '/') path[strlen(path) - 1] = 0;
-        print(path); print(" - File"); printch('\n');
+        printColor(path, WHITE_ON_BLACK); printColor(" - File", WHITE_ON_BLACK); printch('\n');
         break;
     case FT_DIR:
         HD_RW(file.inode.i_block[0], HD_READ, 1, sect);
@@ -129,7 +159,7 @@ void ls(char* path) {
 		for (i = 0; i < file.inode.i_size/sizeof(struct DIR_ENTRY); ++i) {
 			unsigned int fileType = getFileType(de[i].de_inode);
 			if(fileType == FT_NML) {
-				printColor(de[i].de_name, GREEN_ON_BLACK);
+				printColor(de[i].de_name, WHITE_ON_BLACK);
 			} else if(fileType == FT_DIR){
 				printColor(de[i].de_name, BLUE_ON_BLACK);
 			} else {
@@ -146,5 +176,42 @@ void ls(char* path) {
     }
 }
 
+
+void cd(char* path) {
+	
+	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
+
+
+	struct INODE_NUM folder = findFile(path);
+
+	if(folder.inode_num == -1) {	// Illegal file or file not found
+		print("Illegal file or file not found\n");
+		return;
+	}
+
+	char* pathToFolder = simplify(path);
+	unsigned int len_path = strlen(pathToFolder);
+    switch (folder.inode.i_mode) {
+    case FT_NML:
+    	printColor("Can't change directory into a file\n", RED_ON_BLACK);
+        break;
+    case FT_DIR:
+    	memory_copy(pathToFolder, shellBuffer->currentDir, len_path);
+    	if(pathToFolder[len_path - 1] != '/') {
+    		shellBuffer->currentDir[len_path] = '/';
+    		shellBuffer->currentDir[len_path + 1] = 0;
+    		shellBuffer->len = len_path + 1;
+    	} else {
+	    	shellBuffer->currentDir[len_path] = 0;
+	    	shellBuffer->len = len_path;
+    	}        
+        break;
+    default:
+        print("UNKNOWN FILE TYPE!!\n");
+        for(;;); // halt();
+    }
+
+	free(pathToFolder);
+}
 
 

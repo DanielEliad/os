@@ -11,7 +11,7 @@
 void main () {
 	init_pages(pages_size);
 	screen_install();
-	clear_screen();
+	// clear_screen();
 	
 
 	idt_install();
@@ -28,6 +28,7 @@ void main () {
 	shell_install();
 	keyboard_install();
 	clear_screen();
+	printCurrentDir();
 	// deleteFile("/worldFile");
 	// char* a = malloc(300);
 	// char* str = "Hello World!";

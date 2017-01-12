@@ -517,7 +517,7 @@ struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY
 
 		}
 	}
-	print("\nCould not find the file specified. returning dummy\n");
+	// print("\nCould not find the file specified. returning dummy\n");
 	struct INODE_NUM dummy = {{0,0,{0,}}, -1};
 	return dummy;
 
@@ -817,5 +817,53 @@ unsigned int getFileType(unsigned int inode_num) {
 
 
 
+char* simplify(char* path) {
+	unsigned int len_path = strlen(path);
+	unsigned int last_slash = 0;
+	unsigned int pointer = 0;
+	unsigned int removed = 0;
+	while(pointer != len_path) {
+		if(path[pointer] == '/') {
 
+			if(path[pointer + 1] == '.' && path[pointer + 2] == '/') {
+				// Mark for removal
+				path[pointer + 1] = 0;
+				path[pointer + 2] = 0;
+				removed += 2;
+			} else if(path[pointer + 1] == '.' && path[pointer + 2] == '.') {
+				if(pointer == 0) {
+					continue;
+				}
+
+
+				// Mark for removal
+				for(unsigned int j = last_slash + 1; j <= pointer + 2; j++) {
+					path[j] = 0;
+					removed++;
+				}
+
+				if(path[pointer + 3] == '/') {
+					path[pointer + 3] = 0;
+					removed++;
+				}
+
+			}
+
+			last_slash = pointer;
+		}
+
+		pointer++;
+	}
+
+
+	char* tmp = malloc(len_path - removed);
+	unsigned int j = 0;
+	for(int i = 0; i < len_path; i++) {
+		if(path[i] != 0) {
+			tmp[j++] = path[i];
+		}
+	}
+
+	return tmp;
+}
 

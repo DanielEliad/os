@@ -110,4 +110,6 @@ char* readFromFile(char* fileName);
 
 unsigned int getFileType(unsigned int inode_num);
 
+char* simplify(char* path);
+
 #endif
