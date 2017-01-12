@@ -60,6 +60,8 @@ void runCommand(char* command) {
 		handle_rm(args);
 	} else if(strcmp(args.argv[0], "touch") == 0) {
 		handle_touch(args);
+	} else if(strcmp(args.argv[0], "mkdir") == 0) {
+		handle_mkdir(args);
 	}
 
 
@@ -162,6 +164,12 @@ void handle_rm(struct Args args) {
 }
 
 void handle_touch(struct Args args) {
+	
+	if(args.argc == 1) {
+		printColor("Provide a file to create\n", RED_ON_BLACK);
+		return;
+	}
+
 	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
 	
 	for(int i = 1; i < args.argc; i++) {
@@ -174,6 +182,28 @@ void handle_touch(struct Args args) {
 		}
 	}
 }
+
+void handle_mkdir(struct Args args) {
+	if(args.argc == 1) {
+		printColor("Provide a directory to create\n", RED_ON_BLACK);
+		return;
+	}
+
+	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
+	
+	for(int i = 1; i < args.argc; i++) {
+		if(args.argv[i][0] == '/') {
+			mkdir(args.argv[i]);
+		} else {
+			char* completePath = concat(shellBuffer->currentDir, args.argv[i]);
+			mkdir(completePath);
+			free(completePath);
+		}
+	}
+
+}
+
+
 
 void ls(char* path) {
 
@@ -315,5 +345,14 @@ void touch(char* path) {
 	free(simplifiedPath);
 	free(f.pathToDir);
 	free(f.dirName);
+}
+
+void mkdir(char* path) {
+	char* simplifiedPath = simplify(path);
+	struct FOLDER f = getNameOfContainingFolder(simplifiedPath);
+	makeFolder(f.dirName, f.pathToDir);
+	free(simplifiedPath);
+	free(f.pathToDir);
+	free(f.dirName);	
 }
 

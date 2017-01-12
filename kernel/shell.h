@@ -33,10 +33,17 @@ void printCurrentDir();
 // Handlers to Commands
 void handle_ls(struct Args args);
 void handle_cd(struct Args args);
+void handle_rm(struct Args args);
+void handle_touch(struct Args args);
+void handle_mkdir(struct Args args);
 
 // Commands
 void ls(char* path);
 void cd(char* path);
+void rm(char* path);
+void rmdir(char* path);
+void touch(char* path);
+void mkdir(char* path);
 
 
 #endif
