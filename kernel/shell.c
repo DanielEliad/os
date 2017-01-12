@@ -64,26 +64,22 @@ void runCommand(char* command) {
 	}
 
 	struct Args args = getArgs(command);
-	// char tmp[20]; itoa(args.argc, tmp); print(tmp); printch('\n');
-	// print(args.argv[0]); printch('\n');
+
 	if(strcmp(args.argv[0], "ls") == 0) {
 		handle_ls(args);
 	} else if(strcmp(args.argv[0], "cd") == 0) {
 		handle_cd(args);
-	}
+	} // else if(strcnp(args.argv[0], "rm"))
 
 
 	freeArgs(args);
 	
 }
 
-
 void printCurrentDir() {
 	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
 	printColor(shellBuffer->currentDir, GREEN_ON_BLACK); printColor(" ", GREEN_ON_BLACK);
 }
-
-
 
 void handle_ls(struct Args args) {
 	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;

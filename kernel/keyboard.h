@@ -107,6 +107,7 @@ struct KeyboardBuffer {
 #define keyboard_base (shell_base + sizeof(struct ShellBuffer))
 void keyboard_handler(struct regs *r);
 void keyboard_install();
+void clearKeys();
 // void keyboard_wait_outport();
 // void disable_translation();
 // void keyboard_set_scancode_set(unsigned char set);

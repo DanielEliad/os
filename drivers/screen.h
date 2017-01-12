@@ -57,6 +57,8 @@ void backspace();
 void shiftAndUpdateAll(int newWindowDelta);
 void update(int screen_pos, int buffer_pos, int n_characters);
 void shiftWindow(int delta);
+
 char isBottomOfScreen();
+char isTopOfScreen();
 
 #endif

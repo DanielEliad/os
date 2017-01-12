@@ -123,8 +123,8 @@ unsigned char kbdusysh[128] =
             keys->buffer[keys->i++] = 0;
             printch(ENTER);
             runCommand(keys->buffer);   //runCommand can't be blocking
-            memory_set(keys->buffer, 0x00, keys->i);
-            keys->i = 0;
+            clearKeys();
+            
             printCurrentDir();
             break;
         case '\t':
@@ -137,7 +137,9 @@ unsigned char kbdusysh[128] =
         case KUP:
             if(keys->CTRL) {
                 // Scroll up
-                shiftAndUpdateAll(-MAX_COLS*2);
+                if(!isTopOfScreen()) {
+                    shiftAndUpdateAll(-MAX_COLS*2);
+                }
             } else {
                 // Repeat last command up
             }
@@ -162,55 +164,17 @@ unsigned char kbdusysh[128] =
 void keyboard_install() {
    
     //Allocate the buffer
-    struct KeyboardBuffer* keys = (struct KeyboardBuffer* )keyboard_base;
+    struct KeyboardBuffer* keys = (struct KeyboardBuffer *) keyboard_base;
     keys->buffer = malloc(BufferLen);
     keys->i = 0;
-    // char tmp[200]; itoa(keys->i, tmp); print(tmp); printch('\n');
 
     //Install the keyboard handler to IRQ1
     irq_install_handler(1, keyboard_handler);
-
-    // keyboard_wait_outport();
-    // port_byte_out(KEYBOARD_DATA_REGISTER, KEYBOARD_RESET_COMMAND);      // Reset kb
-
-
-    // keyboard_set_scancode_set(2);
-
-    // //disables keyboard scan code translation
-    // disable_translation();
-    
-
 }
 
 
-// void disable_translation() {
-//     keyboard_wait_outport();
-//     port_byte_out(KEYBOARD_STATUS_REGISTER, KEYBOARD_READ_CONFIGURATION);                // Send "read configuration byte" command
-
-//     keyboard_wait_outport();
-//     char config = port_byte_in(KEYBOARD_DATA_REGISTER);                  // foo = old value of configuration byte
-
-//     config = config & ~(1 << 6);                // foo = old value with translation disabled
-
-//     keyboard_wait_outport();
-//     port_byte_out(KEYBOARD_STATUS_REGISTER, KEYBOARD_WRITE_CONFIGURATION);                // Send "write configuration byte" command
-//     keyboard_wait_outport();
-//     port_byte_out(KEYBOARD_DATA_REGISTER, config);                 // Set configuration byte to disable translation
-// }
-
-// void keyboard_wait_outport() {
-//     return;
-//     while(!(port_byte_in(KEYBOARD_STATUS_REGISTER) &0x02));
-// }
-
-
-
-// void keyboard_set_scancode_set(unsigned char set) {
-//     if(set >3 || set <= 0) return;
-//     keyboard_wait_outport();
-//     port_byte_out(KEYBOARD_DATA_REGISTER, 0xf0);
-
-//     keyboard_wait_outport();
-//     port_byte_out(KEYBOARD_DATA_REGISTER, set);
-// }
-
+void clearKeys() {
+    struct KeyboardBuffer* keys = (struct KeyboardBuffer *) keyboard_base;
+    memory_set(keys->buffer, 0x00, keys->i);
+    keys->i = 0;
+}

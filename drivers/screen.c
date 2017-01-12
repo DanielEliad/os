@@ -29,6 +29,10 @@ void print_char(char character, int col, int row, char attribute_byte) {
 		offset = get_cursor();
 	}
 
+	// if(offset > SCREENSIZE) {
+	// 	shiftWindow(0);
+	// }
+
 	if(character == '\n') {
 		int rows = offset/(2*MAX_COLS);
 		offset = get_screen_offset(MAX_COLS -1, rows);
@@ -127,11 +131,11 @@ void printch(char ch) {
 void clear_screen() {
 	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
 	shiftWindow(SCREENSIZE);
-	for(int row = 0; row < MAX_ROWS; ++row) {
-		for(int col = 0; col < MAX_COLS; ++col) {
-			print_char(' ', col, row, WHITE_ON_BLACK);
-		}
-	}
+	// for(int row = 0; row < MAX_ROWS; ++row) {
+	// 	for(int col = 0; col < MAX_COLS; ++col) {
+	// 		print_char(' ', col, row, WHITE_ON_BLACK);
+	// 	}
+	// }
 	set_cursor(get_screen_offset(0,0));
 }
 
@@ -193,14 +197,16 @@ void update(int screen_pos, int buffer_pos, int n_characters) {
 
 void shiftWindow(int delta) {
 	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
-	if(screenBuffer->startOfWindow + delta - screenMemoryBufferSize < 0) {
+	if(screenBuffer->startOfWindow + delta > screenMemoryBufferSize) {
 		memory_copy
 				(
 					screenBuffer->screenMemory + delta,
 					screenBuffer->screenMemory,
-					screenBuffer->startOfWindow
-				);	// Maybe +/- delta on n_bytes
+					screenBuffer->startOfWindow + delta
+				);	// Maybe +/- delta on third argument
 
+	} else if(screenBuffer->startOfWindow + delta < 0) {
+		return;
 	}
 
 	screenBuffer->startOfWindow += delta;
@@ -212,6 +218,12 @@ void shiftWindow(int delta) {
 char isBottomOfScreen() {
 	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
 
-	int row = get_row(get_cursor());
 	return get_row(get_cursor()) == screenBuffer->lastRowWritten;
+}
+
+
+char isTopOfScreen() {
+	struct ScreenBuffer* screenBuffer = (struct ScreenBuffer *) screen_base;
+	
+	return screenBuffer->startOfWindow == 0;
 }
