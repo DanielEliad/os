@@ -16,27 +16,14 @@ struct Args getArgs(char* command) {
 	int len_command = strlen(command);
 	int i = 0;
 	while(i < MAX_PARAM_LEN && newIndex != -1) {
-		// print("\nNew Arg: "); char t[20]; itoa(i, t); print(t); printch('\n');
 		args[i] = malloc(newIndex - oldIndex + 1);	// +1 for the null terminator
-		// print(command + oldIndex);
-		// char l[20]; itoa(args[i], l); print("args[i]: "); print(l); printch('\n');
 		memory_copy(command + oldIndex, args[i], newIndex - oldIndex);
 		oldIndex = newIndex + 1;
 		newIndex = find(' ', command, newIndex);
 		i++;
 	}
-	// for(i = 0; i < MAX_PARAM_LEN && newIndex != -1 ; i++) {
-	// 	print("\nNew Loop\n");
-	// 	args[i] = malloc(newIndex - oldIndex + 1);	// +1 for the null terminator
-	// 	memory_copy(command + oldIndex, args[i], newIndex - oldIndex);
-	// 	oldIndex = newIndex;
-	// 	newIndex = find(' ', command, newIndex);
-	// }
 
-	// print("\nNew Arg: "); char t[20]; itoa(i, t); print(t); printch('\n');
 	args[i] = malloc(len_command - oldIndex + 1);
-	// print(command + oldIndex);
-	// char l[20]; itoa(args[i], l); print("args[i]: "); print(l); printch('\n');
 	memory_copy(command + oldIndex, args[i], len_command - oldIndex);
 	args[i][len_command - oldIndex + 1] = 0;
 	struct Args a;
@@ -69,7 +56,9 @@ void runCommand(char* command) {
 		handle_ls(args);
 	} else if(strcmp(args.argv[0], "cd") == 0) {
 		handle_cd(args);
-	} // else if(strcnp(args.argv[0], "rm"))
+	} else if(strcmp(args.argv[0], "rm") == 0) {
+		handle_rm(args);
+	}
 
 
 	freeArgs(args);
@@ -131,11 +120,58 @@ void handle_cd(struct Args args) {
 	free(completePath);
 }
 
+void handle_rm(struct Args args) {
+	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
+
+	if(args.argc == 1) {
+		printColor("Provide a file to remove\n", RED_ON_BLACK);
+		return;
+	}
+
+	int i = 1;
+	char dir = 0;
+	if(strcmp("--r", args.argv[1]) == 0) {
+		if(args.argc == 2) {
+			printColor("Provide a directory to remove\n", RED_ON_BLACK);
+			return;
+		}
+
+		i = 2;
+		dir = 1;
+	}
+
+	for(; i < args.argc; i++) {
+		if(args.argv[i][0] == '/') {
+			if(dir) {
+				rmdir(args.argv[i]);
+			} else {
+				rm(args.argv[i]);
+			}
+		} else {
+			char* completePath = concat(shellBuffer->currentDir, args.argv[i]);
+			if(dir) {
+				rmdir(completePath);
+			} else {
+				rm(completePath);
+			}
+			free(completePath);
+		}
+	}
+}
+
 void ls(char* path) {
+
+	char* pathToFolder = simplify(path);
+	
+	if(strcmp(pathToFolder, "/..") == 0) {
+		printColor("Illegal file or file not found\n", RED_ON_BLACK);
+		return;
+	}
+
 	struct INODE_NUM file = findFile(path);
 
 	if(file.inode_num == -1) {	// Illegal file or file not found
-		print("Illegal file or file not found\n");
+		printColor("Illegal file or file not found\n", RED_ON_BLACK);
 		return;
 	}
 
@@ -158,7 +194,7 @@ void ls(char* path) {
 			} else if(fileType == FT_DIR){
 				printColor(de[i].de_name, BLUE_ON_BLACK);
 			} else {
-				print("UNKNOWN FILE TYPE!!\n");
+				printColor("UNKNOWN FILE TYPE!!\n", RED_ON_BLACK);
         		for(;;); // halt();
 			}
 			printch('\t');
@@ -166,26 +202,30 @@ void ls(char* path) {
         printch('\n');
         break;
     default:
-        print("UNKNOWN FILE TYPE!!\n");
+        printColor("UNKNOWN FILE TYPE!!\n", RED_ON_BLACK);
         for(;;); // halt();
     }
 }
 
-
 void cd(char* path) {
+	char* pathToFolder = simplify(path);
+	unsigned int len_path = strlen(pathToFolder);
 	
+	if(strcmp(pathToFolder, "/..") == 0) {
+		printColor("Illegal file or file not found\n", RED_ON_BLACK);
+		return;
+	}
 	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
 
 
 	struct INODE_NUM folder = findFile(path);
 
 	if(folder.inode_num == -1) {	// Illegal file or file not found
-		print("Illegal file or file not found\n");
+		printColor("Illegal file or file not found\n", RED_ON_BLACK);
 		return;
 	}
 
-	char* pathToFolder = simplify(path);
-	unsigned int len_path = strlen(pathToFolder);
+	
     switch (folder.inode.i_mode) {
     case FT_NML:
     	printColor("Can't change directory into a file\n", RED_ON_BLACK);
@@ -202,11 +242,56 @@ void cd(char* path) {
     	}        
         break;
     default:
-        print("UNKNOWN FILE TYPE!!\n");
+        printColor("UNKNOWN FILE TYPE!!\n", RED_ON_BLACK);
         for(;;); // halt();
     }
 
 	free(pathToFolder);
 }
 
+
+void rm(char* path) {
+	struct INODE_NUM file = findFile(path);
+
+	if(file.inode_num == -1) {	// Illegal file or file not found
+		printColor("Illegal file or file not found\n", RED_ON_BLACK);
+		return;
+	}
+
+	switch (file.inode.i_mode) {
+    case FT_NML:
+    	deleteFile(path);
+        break;
+    case FT_DIR:
+        printColor("Use --r to recursively delete directories and files\n", RED_ON_BLACK);
+        break;
+    default:
+        printColor("UNKNOWN FILE TYPE!!\n", RED_ON_BLACK);
+        for(;;); // halt();
+    }
+}
+
+void rmdir(char* path) {
+	struct INODE_NUM file = findFile(path);
+	print("Here");
+	if(file.inode_num == -1) {	// Illegal file or file not found
+		printColor("Illegal file or file not found\n", RED_ON_BLACK);
+		return;
+	}
+
+	switch (file.inode.i_mode) {
+    case FT_NML:
+    	print("\nFile");
+    	deleteFile(path);
+        break;
+    case FT_DIR:
+    	print("\nDir");
+        deleteFile(path);
+        print("\nDir");
+        break;
+    default:
+        printColor("UNKNOWN FILE TYPE!!\n", RED_ON_BLACK);
+        for(;;); // halt();
+    }
+}
 

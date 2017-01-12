@@ -495,7 +495,6 @@ struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY
 	path += i + isDir; // + i to pass the first i characters of the 
 									// new dir name
 									// + isDir to pass the '/' if it is there
-
 	for (int j = 0; j < currentDirINODE.i_size/sizeof(struct DIR_ENTRY); ++j) {
 
 		if (strcmp(fileName, currentDE[j].de_name) == 0) {	// They are equal!
@@ -517,7 +516,7 @@ struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY
 
 		}
 	}
-	// print("\nCould not find the file specified. returning dummy\n");
+	print("\nCould not find the file specified. returning dummy\n");
 	struct INODE_NUM dummy = {{0,0,{0,}}, -1};
 	return dummy;
 
@@ -825,29 +824,34 @@ char* simplify(char* path) {
 	while(pointer != len_path) {
 		if(path[pointer] == '/') {
 
-			if(path[pointer + 1] == '.' && path[pointer + 2] == '/') {
-				// Mark for removal
-				path[pointer + 1] = 0;
-				path[pointer + 2] = 0;
-				removed += 2;
-			} else if(path[pointer + 1] == '.' && path[pointer + 2] == '.') {
+			if(path[pointer + 1] == '.' && path[pointer + 2] == '.') {
 				if(pointer == 0) {
+					pointer++;
 					continue;
 				}
 
-
 				// Mark for removal
-				for(unsigned int j = last_slash + 1; j <= pointer + 2; j++) {
-					path[j] = 0;
-					removed++;
-				}
+				path[last_slash + 1] = 0;
+				path[pointer + 1] = 0;
+				path[pointer + 2] = 0;
+				removed += 3;
 
 				if(path[pointer + 3] == '/') {
 					path[pointer + 3] = 0;
 					removed++;
 				}
 
-			}
+			} else if(path[pointer + 1] == '.') {
+				// Mark for removal
+				path[pointer + 1] = 0;
+				removed++;
+				if(path[pointer + 2] == '/') {
+					path[pointer + 2] = 0;
+					removed++;
+				}	
+			} 
+
+
 
 			last_slash = pointer;
 		}

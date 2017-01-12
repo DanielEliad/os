@@ -28,7 +28,6 @@ void main () {
 	shell_install();
 	keyboard_install();
 	// clear_screen();
-	printCurrentDir();
 	// deleteFile("/worldFile");
 	// char* a = malloc(300);
 	// char* str = "Hello World!";
@@ -38,7 +37,7 @@ void main () {
 
 	// print("\n--------------------------------------------\n");
 	// struct INODE_NUM file = makeFile("worldFile", "/");
-	// struct INODE_NUM folder = makeFolder("worldDir", "/.");
+	// struct INODE_NUM folder = makeFolder("worldDir", "/");
 	// struct INODE_NUM nestedFile = makeFile("nested", "/worldDir");
 	// struct INODE_NUM nestedFile2 = makeFile("nested2", "/worldDir");
 	// struct INODE_NUM worldDir = findFile("/worldDir");
@@ -53,8 +52,8 @@ void main () {
 	// writeToFile("/worldDir/nested", str, strlen(str));
 	// char* tmp = readFromFile("/worldDir/nested");
 	
-	// root = findFile("/");
-	// stat(&root.inode);
+	struct INODE_NUM root = findFile("/");
+	stat(&root.inode);
 	// stat(&folder.inode);
 	//stat(findFile("/helloWorld.txt"));
 	// print("\n--------------------------------------------\n");
@@ -74,5 +73,6 @@ void main () {
 	// itoa(0x40000000, buff);
 	// print(buff);
 	//print("I am the Tal OS...\nT.A.L.O.S\n    Tal\n    Awesome\n    Lovely\n    Overwatch\n    System");
+	printCurrentDir();
 	for(;;);
 }
