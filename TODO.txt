@@ -10,3 +10,4 @@ void WriteToFile(char* fileName); # CHECK
 void ReadFromFile(char* fileName, char* buffer, unsigned int len); # CHECK
 
 Have the shell jump back to the last line written when looking up in the history
+use skipSpaces(); in getArgs();
