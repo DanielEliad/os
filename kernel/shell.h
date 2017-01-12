@@ -32,9 +32,11 @@ void printCurrentDir();
 
 // Handlers to Commands
 void handle_ls(struct Args args);
+void handle_cd(struct Args args);
 
 // Commands
 void ls(char* path);
+void cd(char* path);
 
 
 #endif

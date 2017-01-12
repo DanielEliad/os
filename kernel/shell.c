@@ -143,7 +143,6 @@ void ls(char* path) {
 		return;
 	}
 
-	// char t[20]; itoa(file.inode_num, t); printch('\n'); print(t); printch('\n');
 	unsigned int i = 0;
     char sect[512] = {0};
     struct DIR_ENTRY *de;
