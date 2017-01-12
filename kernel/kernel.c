@@ -48,10 +48,10 @@ void main () {
 	// stat(&root.inode);
 	// struct INODE_NUM worldDir = findFile("/worldDir/nested");
 	// stat(&worldDir.inode);
-	char* str = "Hello World!\n";
-	writeToFile("/worldDir/nested", str, strlen(str));
-	char* str2 = "Hello World2!\n";
-	writeToFile("/worldFile", str2, strlen(str2));
+	// char* str = "Hello World!\n";
+	// writeToFile("/worldDir/nested", str, strlen(str));
+	// char* str2 = "Hello World2!\n";
+	// writeToFile("/worldFile", str2, strlen(str2));
 	// char* tmp = readFromFile("/worldDir/nested");
 	
 	struct INODE_NUM root = findFile("/");

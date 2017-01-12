@@ -64,6 +64,8 @@ void runCommand(char* command) {
 		handle_mkdir(args);
 	} else if(strcmp(args.argv[0], "cat") == 0) {
 		handle_cat(args);
+	} else if(strcmp(args.argv[0], "write") == 0) {
+		handle_write(args, command);
 	}
 
 
@@ -221,6 +223,49 @@ void handle_cat(struct Args args) {
 			free(completePath);
 		}
 	}
+}
+
+void handle_write(struct Args args, char* command) {
+	if(args.argc == 1) {
+		printColor("Provide a file to write into\n", RED_ON_BLACK);
+		return;
+	}
+
+	if(args.argc == 2) {
+		printColor("Provide data to write into the file\n", RED_ON_BLACK);
+		return;
+	}
+
+	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
+	
+	int indexSecondArg = findFirst(' ', command) + 1;
+	int indexThirdArg = find(' ', command, indexSecondArg) + 1;
+	int indexEndThirdArg = strlen(command) - 1;
+	if(command[indexThirdArg] != '"') {
+		printColor("Data to the `write` command should start with \"\n", RED_ON_BLACK);
+		return;
+	}
+	if(command[indexEndThirdArg] != '"') {
+		printColor("Data to the `write` command should start end with \"\n", RED_ON_BLACK);
+		return;
+	}
+
+	indexEndThirdArg -= 1;	// Skip the "
+	indexThirdArg += 1;	// Skip the "
+
+	unsigned int len_data = indexEndThirdArg - indexThirdArg + 1;	// Difference of the indexes + 1 to equal the size
+	char* data = malloc(len_data);
+	memory_copy(command + indexThirdArg, data, len_data);
+
+	if(args.argv[1][0] == '/') {
+		write(args.argv[1], data, len_data);
+	} else {
+		char* completePath = concat(shellBuffer->currentDir, args.argv[1]);
+		write(completePath, data, len_data);
+		free(completePath);
+	}
+
+	free(data);
 }
 
 
@@ -383,5 +428,10 @@ void cat(char* path) {
 	printch('\n');
 	free(simplifiedPath);
 	free(content);
+}
+
+void write(char* path, char* data, unsigned int len_data) {
+	char* simplifiedPath = simplify(path);
+	writeToFile(simplifiedPath, data, len_data);
 }
 
