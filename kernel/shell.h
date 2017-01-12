@@ -36,6 +36,7 @@ void handle_cd(struct Args args);
 void handle_rm(struct Args args);
 void handle_touch(struct Args args);
 void handle_mkdir(struct Args args);
+void handle_cat(struct Args args);
 
 // Commands
 void ls(char* path);
@@ -44,6 +45,7 @@ void rm(char* path);
 void rmdir(char* path);
 void touch(char* path);
 void mkdir(char* path);
+void cat(char* path);
 
 
 #endif

@@ -62,6 +62,8 @@ void runCommand(char* command) {
 		handle_touch(args);
 	} else if(strcmp(args.argv[0], "mkdir") == 0) {
 		handle_mkdir(args);
+	} else if(strcmp(args.argv[0], "cat") == 0) {
+		handle_cat(args);
 	}
 
 
@@ -200,7 +202,25 @@ void handle_mkdir(struct Args args) {
 			free(completePath);
 		}
 	}
+}
 
+void handle_cat(struct Args args) {
+	if(args.argc == 1) {
+		printColor("Provide a file to cat\n", RED_ON_BLACK);
+		return;
+	}
+
+	struct ShellBuffer* shellBuffer = (struct ShellBuffer* ) shell_base;
+	
+	for(int i = 1; i < args.argc; i++) {
+		if(args.argv[i][0] == '/') {
+			cat(args.argv[i]);
+		} else {
+			char* completePath = concat(shellBuffer->currentDir, args.argv[i]);
+			cat(completePath);
+			free(completePath);
+		}
+	}
 }
 
 
@@ -295,7 +315,6 @@ void cd(char* path) {
 	free(pathToFolder);
 }
 
-
 void rm(char* path) {
 	struct INODE_NUM file = findFile(path);
 
@@ -354,5 +373,15 @@ void mkdir(char* path) {
 	free(simplifiedPath);
 	free(f.pathToDir);
 	free(f.dirName);	
+}
+
+void cat(char* path) {
+	char* simplifiedPath = simplify(path);
+	char* content = readFromFile(simplifiedPath);
+	if(content == 0) return;
+	print(content);
+	printch('\n');
+	free(simplifiedPath);
+	free(content);
 }
 

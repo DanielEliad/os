@@ -673,7 +673,6 @@ void deleteFile(char* file) {
 		for(;;);	// halt();
 	}
 	
-	print(file);
 	int len = strlen(file);
 	char pathToDir[len];
 	char* fileName;
@@ -772,6 +771,10 @@ void writeToFile(char* fileName, char* data, unsigned int len) {
 
 char* readFromFile(char* fileName) {
 	struct INODE file = findFile(fileName).inode;
+	if(file.i_mode == FT_DIR) {
+		printColor("Can't read contents of a directory\n", RED_ON_BLACK);
+		return 0;
+	}
 	char* dataBuffer = malloc(file.i_size);
 	unsigned int sects_num = file.i_size/512;
 	unsigned int remainder = file.i_size%512;
