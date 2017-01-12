@@ -273,7 +273,7 @@ void rm(char* path) {
 
 void rmdir(char* path) {
 	struct INODE_NUM file = findFile(path);
-	print("Here");
+	
 	if(file.inode_num == -1) {	// Illegal file or file not found
 		printColor("Illegal file or file not found\n", RED_ON_BLACK);
 		return;
@@ -281,17 +281,19 @@ void rmdir(char* path) {
 
 	switch (file.inode.i_mode) {
     case FT_NML:
-    	print("\nFile");
     	deleteFile(path);
         break;
     case FT_DIR:
-    	print("\nDir");
         deleteFile(path);
-        print("\nDir");
         break;
     default:
         printColor("UNKNOWN FILE TYPE!!\n", RED_ON_BLACK);
         for(;;); // halt();
     }
+
+	// print("Here");
+ //    for(;;);
+
+
 }
 

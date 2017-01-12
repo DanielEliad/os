@@ -648,7 +648,7 @@ void removeFolder(struct SUPER_BLOCK* sb, struct DIR_ENTRY* de, unsigned int i, 
 	
 	struct DIR_ENTRY* inner_de = (struct DIR_ENTRY *) s;
 
-	for (unsigned int j = 0; j < folderToRemove.i_size/sizeof(struct DIR_ENTRY); ++j) {
+	for (unsigned int j = 2; j < folderToRemove.i_size/sizeof(struct DIR_ENTRY); ++j) {	// 2 to skip . and ..
 		struct INODE fileToRemove;
 		iget(sb, &fileToRemove, inner_de[j].de_inode);
 		if(fileToRemove.i_mode == FT_NML) {
@@ -672,8 +672,9 @@ void deleteFile(char* file) {
 		print("\n----------------CAN'T DELETE ROOT FOLDER!----------------\n");
 		for(;;);	// halt();
 	}
-
-	unsigned int len = strlen(file);
+	
+	print(file);
+	int len = strlen(file);
 	char pathToDir[len];
 	char* fileName;
 	strcopy(file, pathToDir);
@@ -831,10 +832,10 @@ char* simplify(char* path) {
 				}
 
 				// Mark for removal
-				path[last_slash + 1] = 0;
-				path[pointer + 1] = 0;
-				path[pointer + 2] = 0;
-				removed += 3;
+				for(int i = last_slash + 1; i <= pointer + 2; i++) {
+					path[i] = 0;
+					removed++;
+				}
 
 				if(path[pointer + 3] == '/') {
 					path[pointer + 3] = 0;
@@ -867,7 +868,7 @@ char* simplify(char* path) {
 			tmp[j++] = path[i];
 		}
 	}
-
+	printColor(tmp, RED_ON_BLACK);
 	return tmp;
 }
 
