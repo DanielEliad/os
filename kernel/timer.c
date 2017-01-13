@@ -17,11 +17,12 @@ void timer_phase(int hz) {
 *  once every hour. */
 void timer_handler(struct regs *r) {
     /* Increment our 'tick count' */
-    timer_ticks++;
+    struct TimerBuffer * timerBuffer = (struct TimerBuffer *) timer_base;
+    timerBuffer->timer_ticks++;
 
     /* Every 100 clocks (1 second), we will
     *  display a message on the screen */
-    if (timer_ticks % 100 == 0) {
+    if (timerBuffer->timer_ticks % 100 == 0) {
         //print("One second has passed\n");
     }
 }
@@ -29,7 +30,8 @@ void timer_handler(struct regs *r) {
 /* Sets up the system clock by installing the timer handler
 *  into IRQ0 */
 void timer_install() {
-	timer_ticks = 0;
+	struct TimerBuffer * timerBuffer = (struct TimerBuffer *) timer_base;
+	timerBuffer->timer_ticks = 0;
 	
 
     timer_phase(100); //set the tick time to 100 HZ
@@ -46,9 +48,10 @@ void timer_install() {
 /* This will continuously loop until the given time has
 *  been reached */
 void timer_wait(int ticks) {
+    struct TimerBuffer * timerBuffer = (struct TimerBuffer *) timer_base;
     unsigned long eticks;
 
-    eticks = timer_ticks + ticks;
-    while(timer_ticks < eticks);
+    eticks = timerBuffer->timer_ticks + ticks;
+    while(timerBuffer->timer_ticks < eticks);
 }
 
