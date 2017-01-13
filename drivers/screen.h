@@ -4,7 +4,7 @@
 #include "../kernel/IO.h"
 #include "../kernel/utils.h"
 
-#define screen_base (0x100000)
+#define screen_base (timer_base + sizeof(struct TimerBuffer))
 // beware of running over this address with code / data
 #define VIDEO_ADDRESS 0xb8000
 #define MAX_ROWS 25
