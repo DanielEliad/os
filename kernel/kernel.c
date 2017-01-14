@@ -3,7 +3,7 @@
 #include "idt.h"
 #include "irq.h"
 #include "../drivers/timer.h"
-#include "keyboard.h"
+#include "../drivers/keyboard.h"
 #include "../memory/header.h"
 #include "../drivers/hd.h"
 #include "../drivers/fs.h"

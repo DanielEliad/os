@@ -1,7 +1,7 @@
 #ifndef HEADER_H
 #define HEADER_H
 #include "../kernel/utils.h"
-#include "../kernel/keyboard.h"
+#include "../drivers/keyboard.h"
 #define base (keyboard_base + sizeof(struct KeyboardBuffer))
 #define pages_size (1<<30)
 #define len_curve 16
