@@ -1,10 +1,10 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include "irq.h"
-#include "IO.h"
+#include "../kernel/irq.h"
+#include "../kernel/IO.h"
 #include "../drivers/screen.h"
-#include "utils.h"
+#include "../kernel/utils.h"
 #define INPUT_TIMER_HZ 1193180 //In HZ
 #define timer_base (0x100000)
 struct TimerBuffer {

@@ -3,7 +3,7 @@
 
 #include "../kernel/IO.h"
 #include "../kernel/utils.h"
-
+#include "timer.h"
 #define screen_base (timer_base + sizeof(struct TimerBuffer))
 // beware of running over this address with code / data
 #define VIDEO_ADDRESS 0xb8000

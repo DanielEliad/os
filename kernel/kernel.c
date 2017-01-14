@@ -2,7 +2,7 @@
 #include "isrs.h"
 #include "idt.h"
 #include "irq.h"
-#include "timer.h"
+#include "../drivers/timer.h"
 #include "keyboard.h"
 #include "../memory/header.h"
 #include "../drivers/hd.h"
