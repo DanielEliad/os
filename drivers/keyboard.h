@@ -108,8 +108,5 @@ struct KeyboardBuffer {
 void keyboard_handler(struct regs *r);
 void keyboard_install();
 void clearKeys();
-// void keyboard_wait_outport();
-// void disable_translation();
-// void keyboard_set_scancode_set(unsigned char set);
 
 #endif
