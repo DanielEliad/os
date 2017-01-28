@@ -27,9 +27,6 @@ void* irq_routines[16] =
 /* This installs a custom IRQ handler for the given IRQ */
 void irq_install_handler(int irq, void (*handler)(struct regs *r)) {
     irq_routines[irq] = handler;
-    //print("GOT HERE\n");
-    //print(itoa(irq));
-    //print("\n");
 }
 
 /* This clears the handler for a given IRQ */
@@ -116,11 +113,6 @@ void irq_install() {
 	send out the END OF INTERRUPT (EOI) command 0x20
 */
 void irq_handler(struct regs *r) {
-    
-    //DEBUG PRINTS
-    //print("\nHANDLING IRQ\n");
-    //print("IRQ#: ");
-    //print(itoa(r->int_no));
 
     /* This is a blank function pointer */
     void (*handler)(struct regs *r);
