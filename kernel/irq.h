@@ -4,10 +4,8 @@
 #include "isr_regs.h"
 #include "IO.h"
 #include "idt.h"
-//!!!
 #include "../drivers/screen.h"
 #include "utils.h"
-//!!!
 
 /* This holds custom IRQ handlers for each IRQ */
 extern void *irq_routines[16];
