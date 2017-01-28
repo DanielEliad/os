@@ -13,7 +13,7 @@ struct idt_ptr idtp;
 extern void idt_load();
 
 /* Use this function to set an entry in the IDT. Alot simpler
-*  than twiddling with the GDT ;) */
+*  than twiddling with the IDT ;) */
 void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, unsigned char flags)
 {
 	idt[num].base_hi = (base >> 16) & 0xFFFF;
