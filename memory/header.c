@@ -106,7 +106,6 @@ void free(unsigned int addr) {
 }
 
 char find_category(int n) {
-	//binary search
 	//assumes sizes go from 2^5 up to and including 2^20
 	//per data section
 	int powers_of_two[16] = {
