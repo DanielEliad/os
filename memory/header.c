@@ -33,7 +33,6 @@ void init_pages(unsigned int size) {
 	// float smallest_data_size = 1 << (5); // 2^5
 	for (int i = 0; i < len_curve; i++) {
 		float data_size = 1 << (i+5); // 2^(i+5)
-		// float frames = (size/smallest_data_size);
 		int amount = (curve[i]*size)/data_size;
 		amounts += amount;
 	}
@@ -42,7 +41,6 @@ void init_pages(unsigned int size) {
 	unsigned int block_addr = base;
 	for (int i = 0; i < len_curve; ++i) {	//for each block
 		float data_size = 1 << (i+5); // 2^(i+5)
-		// float frames = (size/smallest_data_size); //(size/data_size);
 		int amount = (curve[i]*size)/data_size;
 		unsigned int first_header_of_block_addr = header_addr;
 		for (int j = 0; j < amount; ++j) {
@@ -82,8 +80,6 @@ char* malloc(unsigned int n_bytes) {
 		if(h->used == 0) {	//if h is not being used at the moment
 			h->used = 1;	//mark as used
 			memory_set(h->addr, 0x00, h->data_size);
-			// print("\nALLOCATED HEADER WITH ADDR: ");
-			// char tmp[20]; itoa(h->addr, tmp); print(tmp); print("\n");
 			return h->addr;	//return the space allocated for your use.
 		}
 	}
@@ -100,8 +96,6 @@ void free(unsigned int addr) {
 			Header* h = &tested_block->headers[j];
 			if(h->addr == addr) {
 				h->used = 0;
-				// print("\nCLEARED HEADER WITH ADDR: ");
-				// char tmp[20]; itoa(h->addr, tmp); print(tmp); print("\n");
 				return;
 			}
 		}
@@ -133,22 +127,6 @@ char find_category(int n) {
 		1<<19,
 		1<<20
 	};
-
-	// char first = 0;
-	// char last = 16 - 1;
-	// char middle = (first + last)/2;
-
-	// while(first <= last) {
-	// 	if(n < powers_of_two[middle] && powers_of_two[middle-1] <= n) {
-	// 		return middle;
-	// 	} else if(powers_of_two[middle] <= n) {
-	// 		first = middle + 1;
-	// 	} else {
-	// 		last = middle - 1;
-	// 	}
-
-	// 	middle = (first + last)/2;
-	// }
 
 
 	for (int i = 0; i < 16; ++i) {
