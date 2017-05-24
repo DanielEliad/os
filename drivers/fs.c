@@ -491,12 +491,11 @@ struct INODE_NUM findFileEx(struct SUPER_BLOCK* sb, char* path, struct DIR_ENTRY
 		i++;
 		ch = path[i];
 	}
-
+	fileName[i] = 0;
 	path += i + isDir; // + i to pass the first i characters of the 
 									// new dir name
 									// + isDir to pass the '/' if it is there
 	for (int j = 0; j < currentDirINODE.i_size/sizeof(struct DIR_ENTRY); ++j) {
-
 		if (strcmp(fileName, currentDE[j].de_name) == 0) {	// They are equal!
 
 			struct INODE nextFile;
