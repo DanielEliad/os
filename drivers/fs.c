@@ -740,6 +740,13 @@ void deleteFile(char* file) {
 
 void writeToFile(char* fileName, char* data, unsigned int len) {
 	struct INODE_NUM file = findFile(fileName);
+	if(file.inode_num == -1) {
+		//dummy
+		printColor("Illegal file or file not found\n", RED_ON_BLACK);
+		printColor("Creating the file automatically\n", GREEN_ON_BLACK);
+		touch(fileName);
+		file = findFile(fileName);
+	}
 	unsigned int sects_num = len/512;
 
 	unsigned int block = 0;

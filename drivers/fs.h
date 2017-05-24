@@ -3,7 +3,7 @@
 
 #include "hd.h"
 #include "../kernel/utils.h"
-
+#include "../kernel/shell.h"
 #define FT_NML  1
 #define FT_DIR  2
 
